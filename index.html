@@ -210,6 +210,56 @@
             font-size: 1.2em;
         }
         
+        /* FAVORIS */
+        .favorites-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .favorite-card {
+            background: #3d3d3d;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        
+        .favorite-card:hover {
+            border-color: #ff6b35;
+            transform: translateY(-3px);
+        }
+        
+        .favorite-name {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 8px;
+        }
+        
+        .favorite-time {
+            color: #ff6b35;
+            font-family: 'Courier New', monospace;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        
+        .favorite-desc {
+            color: #ccc;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+        
+        .category-title {
+            color: #ff6b35;
+            margin: 25px 0 15px 0;
+            padding-bottom: 5px;
+            border-bottom: 2px solid #ff6b35;
+            font-size: 1.3em;
+        }
+        
         .hidden {
             display: none;
         }
@@ -267,6 +317,10 @@
             .sound-selection {
                 flex-direction: column;
             }
+            
+            .favorites-grid {
+                grid-template-columns: 1fr;
+            }
         }
         
         /* ANIMATIONS */
@@ -275,51 +329,168 @@
             50% { transform: scale(1.02); }
             100% { transform: scale(1); }
         }
-        
-        @keyframes flash {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-        
-        .flash {
-            animation: flash 1s infinite;
-        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>🍳 Chronomulti-Cuisson</h1>
-            <p>Gérez plusieurs cuissons simultanément</p>
+            <h1>Chronomulti-Cuisson</h1>
+            <p>Gerez plusieurs cuissons simultanement</p>
         </div>
         
         <!-- ONGLETS -->
         <div class="tabs">
-            <button class="tab active" onclick="showTab('timers')">⏱️ Minuteries</button>
-            <button class="tab" onclick="showTab('new-timer')">➕ Nouvelle Minuterie</button>
-            <button class="tab" onclick="showTab('weight-calc')">🥩 Cuisson au Poids</button>
+            <button class="tab active" onclick="showTab('timers')">Minuteries</button>
+            <button class="tab" onclick="showTab('favorites')">Favoris</button>
+            <button class="tab" onclick="showTab('new-timer')">Nouvelle Minuterie</button>
+            <button class="tab" onclick="showTab('weight-calc')">Cuisson au Poids</button>
         </div>
         
         <!-- CONTENU ONGLET MINUTERIES -->
         <div id="timers" class="tab-content active">
-            <h2>⏱️ Minuteries Actives</h2>
+            <h2>Minuteries Actives</h2>
             <div id="active-timers">
                 <div class="no-timers">Aucune minuterie active</div>
             </div>
         </div>
         
+        <!-- CONTENU ONGLET FAVORIS -->
+        <div id="favorites" class="tab-content">
+            <h2>Favoris de Cuisson</h2>
+            
+            <div class="category-title">Oeufs</div>
+            <div class="favorites-grid">
+                <div class="favorite-card" onclick="startFavorite('oeuf_mollet', 360, 'Oeuf mollet')">
+                    <div class="favorite-name">Oeuf mollet</div>
+                    <div class="favorite-time">6:00</div>
+                    <div class="favorite-desc">Blanc pris, jaune coulant</div>
+                </div>
+                <div class="favorite-card" onclick="startFavorite('oeuf_dur', 540, 'Oeuf dur')">
+                    <div class="favorite-name">Oeuf dur</div>
+                    <div class="favorite-time">9:00</div>
+                    <div class="favorite-desc">Blanc et jaune bien pris</div>
+                </div>
+                <div class="favorite-card" onclick="startFavorite('oeuf_coque', 180, 'Oeuf a la coque')">
+                    <div class="favorite-name">Oeuf a la coque</div>
+                    <div class="favorite-time">3:00</div>
+                    <div class="favorite-desc">Jaune cremeux, blanc leger</div>
+                </div>
+            </div>
+            
+            <div class="category-title">Pates</div>
+            <div class="favorites-grid">
+                <div class="favorite-card" onclick="startFavorite('pates_alfredo', 660, 'Pates Alfredo')">
+                    <div class="favorite-name">Pates Alfredo</div>
+                    <div class="favorite-time">11:00</div>
+                    <div class="favorite-desc">Tagliatelles ou fettuccine</div>
+                </div>
+                <div class="favorite-card" onclick="startFavorite('pates_spaghetti', 480, 'Spaghetti')">
+                    <div class="favorite-name">Spaghetti</div>
+                    <div class="favorite-time">8:00</div>
+                    <div class="favorite-desc">Al dente</div>
+                </div>
+                <div class="favorite-card" onclick="startFavorite('pates_penne', 540, 'Penne')">
+                    <div class="favorite-name">Penne</div>
+                    <div class="favorite-time">9:00</div>
+                    <div class="favorite-desc">Cuisson parfaite</div>
+                </div>
+                <div class="favorite-card" onclick="startFavorite('pates_coquillettes', 420, 'Coquillettes')">
+                    <div class="favorite-name">Coquillettes</div>
+                    <div class="favorite-time">7:00</div>
+                    <div class="favorite-desc">Pour les enfants</div>
+                </div>
+            </div>
+            
+            <div class="category-title">Riz</div>
+            <div class="favorites-grid">
+                <div class="favorite-card" onclick="startFavorite('riz_basmati', 720, 'Riz basmati')">
+                    <div class="favorite-name">Riz basmati</div>
+                    <div class="favorite-time">12:00</div>
+                    <div class="favorite-desc">Riz long grain parfume</div>
+                </div>
+                <div class="favorite-card" onclick="startFavorite('riz_thaï', 900, 'Riz thaï')">
+                    <div class="favorite-name">Riz thaï</div>
+                    <div class="favorite-time">15:00</div>
+                    <div class="favorite-desc">Riz gluant</div>
+                </div>
+                <div class="favorite-card" onclick="startFavorite('riz_complet', 1200, 'Riz complet')">
+                    <div class="favorite-name">Riz complet</div>
+                    <div class="favorite-time">20:00</div>
+                    <div class="favorite-desc">Riz brun nutritif</div>
+                </div>
+                <div class="favorite-card" onclick="startFavorite('riz_risotto', 1080, 'Risotto')">
+                    <div class="favorite-name">Risotto</div>
+                    <div class="favorite-time">18:00</div>
+                    <div class="favorite-desc">Arborio ou carnaroli</div>
+                </div>
+            </div>
+            
+            <div class="category-title">Legumes</div>
+            <div class="favorites-grid">
+                <div class="favorite-card" onclick="startFavorite('carottes_vapeur', 600, 'Carottes vapeur')">
+                    <div class="favorite-name">Carottes vapeur</div>
+                    <div class="favorite-time">10:00</div>
+                    <div class="favorite-desc">Tendre mais croquant</div>
+                </div>
+                <div class="favorite-card" onclick="startFavorite('brocoli_vapeur', 300, 'Brocoli vapeur')">
+                    <div class="favorite-name">Brocoli vapeur</div>
+                    <div class="favorite-time">5:00</div>
+                    <div class="favorite-desc">Vert et croquant</div>
+                </div>
+                <div class="favorite-card" onclick="startFavorite('haricots_verts', 480, 'Haricots verts')">
+                    <div class="favorite-name">Haricots verts</div>
+                    <div class="favorite-time">8:00</div>
+                    <div class="favorite-desc">Al dente</div>
+                </div>
+                <div class="favorite-card" onclick="startFavorite('pommes_terre', 1200, 'Pommes de terre')">
+                    <div class="favorite-name">Pommes de terre</div>
+                    <div class="favorite-time">20:00</div>
+                    <div class="favorite-desc">A l'eau, moyenne taille</div>
+                </div>
+                <div class="favorite-card" onclick="startFavorite('asperges', 420, 'Asperges')">
+                    <div class="favorite-name">Asperges</div>
+                    <div class="favorite-time">7:00</div>
+                    <div class="favorite-desc">Vertes, a la vapeur</div>
+                </div>
+                <div class="favorite-card" onclick="startFavorite('chou_fleur', 540, 'Chou-fleur')">
+                    <div class="favorite-name">Chou-fleur</div>
+                    <div class="favorite-time">9:00</div>
+                    <div class="favorite-desc">Fleurettes vapeur</div>
+                </div>
+            </div>
+            
+            <div class="category-title">Autres</div>
+            <div class="favorites-grid">
+                <div class="favorite-card" onclick="startFavorite('quinoa', 900, 'Quinoa')">
+                    <div class="favorite-name">Quinoa</div>
+                    <div class="favorite-time">15:00</div>
+                    <div class="favorite-desc">Graines rincees</div>
+                </div>
+                <div class="favorite-card" onclick="startFavorite('lentilles_vertes', 1800, 'Lentilles vertes')">
+                    <div class="favorite-name">Lentilles vertes</div>
+                    <div class="favorite-time">30:00</div>
+                    <div class="favorite-desc">Non trempees</div>
+                </div>
+                <div class="favorite-card" onclick="startFavorite('couscous', 300, 'Couscous')">
+                    <div class="favorite-name">Couscous</div>
+                    <div class="favorite-time">5:00</div>
+                    <div class="favorite-desc">Semoule moyenne</div>
+                </div>
+            </div>
+        </div>
+        
         <!-- CONTENU ONGLET NOUVELLE MINUTERIE -->
         <div id="new-timer" class="tab-content">
-            <h2>➕ Nouvelle Minuterie</h2>
+            <h2>Nouvelle Minuterie</h2>
             
             <div class="form-group">
                 <label>Son d'alerte :</label>
                 <div class="sound-selection">
-                    <button class="sound-btn active" onclick="selectSound('classic')" data-sound="classic">🔔 Classique</button>
-                    <button class="sound-btn" onclick="selectSound('beep')" data-sound="beep">📯 Bip aigu</button>
-                    <button class="sound-btn" onclick="selectSound('alarm')" data-sound="alarm">🚨 Alarme</button>
-                    <button class="sound-btn" onclick="selectSound('bell')" data-sound="bell">⛪ Cloche</button>
-                    <button class="sound-btn" onclick="selectSound('digital')" data-sound="digital">📟 Digital</button>
+                    <button class="sound-btn active" onclick="selectSound('classic')" data-sound="classic">Classique</button>
+                    <button class="sound-btn" onclick="selectSound('beep')" data-sound="beep">Bip aigu</button>
+                    <button class="sound-btn" onclick="selectSound('alarm')" data-sound="alarm">Alarme</button>
+                    <button class="sound-btn" onclick="selectSound('bell')" data-sound="bell">Cloche</button>
+                    <button class="sound-btn" onclick="selectSound('digital')" data-sound="digital">Digital</button>
                 </div>
             </div>
             
@@ -337,31 +508,30 @@
                 </div>
             </div>
             
-            <button onclick="createTimer()">🚀 Démarrer la minuterie</button>
+            <button onclick="createTimer()">Demarrer la minuterie</button>
         </div>
         
         <!-- CONTENU ONGLET CALCUL POIDS -->
         <div id="weight-calc" class="tab-content">
-            <h2>🥩 Calculateur de Cuisson</h2>
+            <h2>Calculateur de Cuisson</h2>
             
             <div class="form-group">
                 <label for="meat-type">Type de viande :</label>
                 <select id="meat-type" onchange="calculateWeightTime()">
-                    <option value="beef">Bœuf</option>
+                    <option value="beef">Boeuf</option>
                     <option value="lamb">Agneau</option>
                     <option value="pork">Porc</option>
                     <option value="chicken">Poulet</option>
-                    <option value="fish">Poisson</option>
                 </select>
             </div>
             
             <div class="form-group">
                 <label for="meat-cut">Morceau :</label>
                 <select id="meat-cut" onchange="calculateWeightTime()">
-                    <option value="roast">Rôti</option>
+                    <option value="roast">Roti</option>
                     <option value="fillet">Filet</option>
                     <option value="leg">Gigot</option>
-                    <option value="shoulder">Épaule</option>
+                    <option value="shoulder">Epaule</option>
                 </select>
             </div>
             
@@ -371,181 +541,72 @@
             </div>
             
             <div class="form-group">
-                <label for="cooking-level">Cuisson désirée :</label>
+                <label for="cooking-level">Cuisson desiree :</label>
                 <select id="cooking-level" onchange="calculateWeightTime()">
                     <option value="rare">Saignant</option>
-                    <option value="medium">À point</option>
+                    <option value="medium">A point</option>
                     <option value="well-done">Bien cuit</option>
                 </select>
             </div>
             
             <div id="weight-result" class="weight-result hidden">
-                <div>⏱️ Temps de cuisson estimé :</div>
+                <div>Temps de cuisson estime :</div>
                 <div id="calculated-time" style="font-size: 1.5em; font-weight: bold; margin: 10px 0;"></div>
-                <button onclick="createTimerFromWeight()">📌 Créer la minuterie</button>
+                <button onclick="createTimerFromWeight()">Creer la minuterie</button>
             </div>
         </div>
     </div>
 
     <script>
-        // BASE DE DONNÉES TEMPS DE CUISSON
+        // BASE DE DONNEES TEMPS DE CUISSON (poisson supprime)
         const cookingTimes = {
             beef: { rare: 40, medium: 50, "well-done": 60 },
             lamb: { rare: 45, medium: 55, "well-done": 65 },
             pork: { medium: 55, "well-done": 70 },
-            chicken: { "well-done": 45 },
-            fish: { medium: 20, "well-done": 30 }
+            chicken: { "well-done": 45 }
+        };
+        
+        // BASE DE DONNEES FAVORIS (oeuf dur corrige a 9 minutes)
+        const favorites = {
+            // Oeufs
+            'oeuf_mollet': { name: 'Oeuf mollet', time: 360, desc: 'Blanc pris, jaune coulant' },
+            'oeuf_dur': { name: 'Oeuf dur', time: 540, desc: 'Blanc et jaune bien pris' }, // 9 minutes = 540 secondes
+            'oeuf_coque': { name: 'Oeuf a la coque', time: 180, desc: 'Jaune cremeux, blanc leger' },
+            
+            // Pates
+            'pates_alfredo': { name: 'Pates Alfredo', time: 660, desc: 'Tagliatelles ou fettuccine' },
+            'pates_spaghetti': { name: 'Spaghetti', time: 480, desc: 'Al dente' },
+            'pates_penne': { name: 'Penne', time: 540, desc: 'Cuisson parfaite' },
+            'pates_coquillettes': { name: 'Coquillettes', time: 420, desc: 'Pour les enfants' },
+            
+            // Riz
+            'riz_basmati': { name: 'Riz basmati', time: 720, desc: 'Riz long grain parfume' },
+            'riz_thaï': { name: 'Riz thai', time: 900, desc: 'Riz gluant' },
+            'riz_complet': { name: 'Riz complet', time: 1200, desc: 'Riz brun nutritif' },
+            'riz_risotto': { name: 'Risotto', time: 1080, desc: 'Arborio ou carnaroli' },
+            
+            // Legumes
+            'carottes_vapeur': { name: 'Carottes vapeur', time: 600, desc: 'Tendre mais croquant' },
+            'brocoli_vapeur': { name: 'Brocoli vapeur', time: 300, desc: 'Vert et croquant' },
+            'haricots_verts': { name: 'Haricots verts', time: 480, desc: 'Al dente' },
+            'pommes_terre': { name: 'Pommes de terre', time: 1200, desc: 'A l eau, moyenne taille' },
+            'asperges': { name: 'Asperges', time: 420, desc: 'Vertes, a la vapeur' },
+            'chou_fleur': { name: 'Chou-fleur', time: 540, desc: 'Fleurettes vapeur' },
+            
+            // Autres
+            'quinoa': { name: 'Quinoa', time: 900, desc: 'Graines rincees' },
+            'lentilles_vertes': { name: 'Lentilles vertes', time: 1800, desc: 'Non trempees' },
+            'couscous': { name: 'Couscous', time: 300, desc: 'Semoule moyenne' }
         };
         
         let activeTimers = [];
         let selectedSound = 'classic';
         
-        // GÉNÉRATEUR DE SONS - Sons bien audibles
-        const soundGenerator = {
-            // Son classique (bip standard)
-            classic: function() {
-                const context = new (window.AudioContext || window.webkitAudioContext)();
-                const oscillator = context.createOscillator();
-                const gainNode = context.createGain();
-                
-                oscillator.connect(gainNode);
-                gainNode.connect(context.destination);
-                
-                oscillator.frequency.value = 800;
-                oscillator.type = 'sine';
-                
-                gainNode.gain.setValueAtTime(0.3, context.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, context.currentTime + 1);
-                
-                oscillator.start(context.currentTime);
-                oscillator.stop(context.currentTime + 1);
-            },
-            
-            // Bip aigu répétitif
-            beep: function() {
-                const context = new (window.AudioContext || window.webkitAudioContext)();
-                const playBeep = (time) => {
-                    const oscillator = context.createOscillator();
-                    const gainNode = context.createGain();
-                    
-                    oscillator.connect(gainNode);
-                    gainNode.connect(context.destination);
-                    
-                    oscillator.frequency.value = 1200;
-                    oscillator.type = 'square';
-                    
-                    gainNode.gain.setValueAtTime(0.5, time);
-                    gainNode.gain.exponentialRampToValueAtTime(0.01, time + 0.2);
-                    
-                    oscillator.start(time);
-                    oscillator.stop(time + 0.2);
-                };
-                
-                // Jouer 3 bips rapides
-                playBeep(context.currentTime);
-                playBeep(context.currentTime + 0.3);
-                playBeep(context.currentTime + 0.6);
-            },
-            
-            // Alarme stridente
-            alarm: function() {
-                const context = new (window.AudioContext || window.webkitAudioContext)();
-                const oscillator = context.createOscillator();
-                const gainNode = context.createGain();
-                
-                oscillator.connect(gainNode);
-                gainNode.connect(context.destination);
-                
-                oscillator.type = 'sawtooth';
-                
-                // Modulation de fréquence pour un son d'alarme
-                const startTime = context.currentTime;
-                for(let i = 0; i < 6; i++) {
-                    oscillator.frequency.setValueAtTime(800, startTime + i * 0.5);
-                    oscillator.frequency.setValueAtTime(1200, startTime + i * 0.5 + 0.25);
-                }
-                
-                gainNode.gain.setValueAtTime(0.4, startTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + 3);
-                
-                oscillator.start(startTime);
-                oscillator.stop(startTime + 3);
-            },
-            
-            // Son de cloche
-            bell: function() {
-                const context = new (window.AudioContext || window.webkitAudioContext)();
-                const oscillator = context.createOscillator();
-                const gainNode = context.createGain();
-                
-                oscillator.connect(gainNode);
-                gainNode.connect(context.destination);
-                
-                oscillator.frequency.value = 600;
-                oscillator.type = 'sine';
-                
-                // Enveloppe de cloche
-                gainNode.gain.setValueAtTime(0, context.currentTime);
-                gainNode.gain.linearRampToValueAtTime(0.3, context.currentTime + 0.1);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, context.currentTime + 2);
-                
-                oscillator.start(context.currentTime);
-                oscillator.stop(context.currentTime + 2);
-            },
-            
-            // Son digital moderne
-            digital: function() {
-                const context = new (window.AudioContext || window.webkitAudioContext)();
-                
-                // Séquence de notes digitales
-                const notes = [523, 659, 784, 1047]; // C5, E5, G5, C6
-                const startTime = context.currentTime;
-                
-                notes.forEach((freq, index) => {
-                    const oscillator = context.createOscillator();
-                    const gainNode = context.createGain();
-                    
-                    oscillator.connect(gainNode);
-                    gainNode.connect(context.destination);
-                    
-                    oscillator.frequency.value = freq;
-                    oscillator.type = 'square';
-                    
-                    const noteStart = startTime + index * 0.15;
-                    gainNode.gain.setValueAtTime(0.3, noteStart);
-                    gainNode.gain.exponentialRampToValueAtTime(0.01, noteStart + 0.1);
-                    
-                    oscillator.start(noteStart);
-                    oscillator.stop(noteStart + 0.1);
-                });
-            }
-        };
-        
-        // SÉLECTION DU SON
-        function selectSound(soundType) {
-            selectedSound = soundType;
-            
-            // Mettre à jour les boutons
-            document.querySelectorAll('.sound-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            event.target.classList.add('active');
-            
-            // Pré-écouter le son
-            playSound(soundType);
-        }
-        
-        // JOUER LE SON
-        function playSound(soundType) {
-            if (soundGenerator[soundType]) {
-                try {
-                    soundGenerator[soundType]();
-                } catch (error) {
-                    console.log('Son non supporté:', error);
-                    // Fallback : utiliser le son classique
-                    soundGenerator.classic();
-                }
-            }
+        // DEMARRER UN FAVORI
+        function startFavorite(favoriteId, time, name) {
+            addTimer(name, time, selectedSound);
+            showTab('timers');
+            showStatus(`Minuterie "${name}" demarree !`);
         }
         
         // GESTION DES ONGLETS
@@ -571,7 +632,7 @@
             const totalSeconds = hours * 3600 + minutes * 60 + seconds;
             
             if (totalSeconds <= 0) {
-                alert('Veuillez définir une durée valide');
+                alert('Veuillez definir une duree valide');
                 return;
             }
             
@@ -679,14 +740,14 @@
             
             // Notification navigateur
             if ('Notification' in window && Notification.permission === 'granted') {
-                new Notification(`⏰ ${timer.name}`, {
-                    body: 'Votre minuterie est terminée !',
+                new Notification(`Minuterie ${timer.name}`, {
+                    body: 'Votre minuterie est terminee !',
                     icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">⏰</text></svg>'
                 });
             }
             
             // Alert visuelle
-            alert(`⏰ ${timer.name} est terminée !`);
+            alert(`Minuterie ${timer.name} est terminee !`);
             updateTimersDisplay();
         }
         
@@ -756,16 +817,151 @@
                     
                     <div class="timer-controls">
                         ${timer.isFinished ? 
-                            `<button class="btn-snooze" onclick="snoozeTimer(${timer.id})">⏰ Reporter 5min</button>` :
+                            `<button class="btn-snooze" onclick="snoozeTimer(${timer.id})">Reporter 5min</button>` :
                             (timer.isRunning ? 
-                                `<button class="btn-pause" onclick="pauseTimer(${timer.id})">⏸️ Pause</button>` :
-                                `<button class="btn-resume" onclick="resumeTimer(${timer.id})">▶️ Reprendre</button>`
+                                `<button class="btn-pause" onclick="pauseTimer(${timer.id})">Pause</button>` :
+                                `<button class="btn-resume" onclick="resumeTimer(${timer.id})">Reprendre</button>`
                             )
                         }
-                        <button class="btn-stop" onclick="stopTimer(${timer.id})">⏹️ Arrêter</button>
+                        <button class="btn-stop" onclick="stopTimer(${timer.id})">Arreter</button>
                     </div>
                 </div>
             `).join('');
+        }
+        
+        // GÉNÉRATEUR DE SONS
+        const soundGenerator = {
+            classic: function() {
+                const context = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = context.createOscillator();
+                const gainNode = context.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(context.destination);
+                
+                oscillator.frequency.value = 800;
+                oscillator.type = 'sine';
+                
+                gainNode.gain.setValueAtTime(0.3, context.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, context.currentTime + 1);
+                
+                oscillator.start(context.currentTime);
+                oscillator.stop(context.currentTime + 1);
+            },
+            
+            beep: function() {
+                const context = new (window.AudioContext || window.webkitAudioContext)();
+                const playBeep = (time) => {
+                    const oscillator = context.createOscillator();
+                    const gainNode = context.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(context.destination);
+                    
+                    oscillator.frequency.value = 1200;
+                    oscillator.type = 'square';
+                    
+                    gainNode.gain.setValueAtTime(0.5, time);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, time + 0.2);
+                    
+                    oscillator.start(time);
+                    oscillator.stop(time + 0.2);
+                };
+                
+                playBeep(context.currentTime);
+                playBeep(context.currentTime + 0.3);
+                playBeep(context.currentTime + 0.6);
+            },
+            
+            alarm: function() {
+                const context = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = context.createOscillator();
+                const gainNode = context.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(context.destination);
+                
+                oscillator.type = 'sawtooth';
+                
+                const startTime = context.currentTime;
+                for(let i = 0; i < 6; i++) {
+                    oscillator.frequency.setValueAtTime(800, startTime + i * 0.5);
+                    oscillator.frequency.setValueAtTime(1200, startTime + i * 0.5 + 0.25);
+                }
+                
+                gainNode.gain.setValueAtTime(0.4, startTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + 3);
+                
+                oscillator.start(startTime);
+                oscillator.stop(startTime + 3);
+            },
+            
+            bell: function() {
+                const context = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = context.createOscillator();
+                const gainNode = context.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(context.destination);
+                
+                oscillator.frequency.value = 600;
+                oscillator.type = 'sine';
+                
+                gainNode.gain.setValueAtTime(0, context.currentTime);
+                gainNode.gain.linearRampToValueAtTime(0.3, context.currentTime + 0.1);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, context.currentTime + 2);
+                
+                oscillator.start(context.currentTime);
+                oscillator.stop(context.currentTime + 2);
+            },
+            
+            digital: function() {
+                const context = new (window.AudioContext || window.webkitAudioContext)();
+                const notes = [523, 659, 784, 1047];
+                const startTime = context.currentTime;
+                
+                notes.forEach((freq, index) => {
+                    const oscillator = context.createOscillator();
+                    const gainNode = context.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(context.destination);
+                    
+                    oscillator.frequency.value = freq;
+                    oscillator.type = 'square';
+                    
+                    const noteStart = startTime + index * 0.15;
+                    gainNode.gain.setValueAtTime(0.3, noteStart);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, noteStart + 0.1);
+                    
+                    oscillator.start(noteStart);
+                    oscillator.stop(noteStart + 0.1);
+                });
+            }
+        };
+        
+        // SÉLECTION DU SON
+        function selectSound(soundType) {
+            selectedSound = soundType;
+            
+            document.querySelectorAll('.sound-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            playSound(soundType);
+        }
+        
+        // JOUER LE SON
+        function playSound(soundType) {
+            if (soundGenerator[soundType]) {
+                try {
+                    soundGenerator[soundType]();
+                } catch (error) {
+                    console.log('Son non supporte:', error);
+                    soundGenerator.classic();
+                }
+            }
         }
         
         // NOM DU SON
@@ -790,6 +986,30 @@
                 return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
             }
             return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+        
+        // MESSAGE DE STATUT
+        function showStatus(message) {
+            const status = document.createElement('div');
+            status.textContent = message;
+            status.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: #4CAF50;
+                color: white;
+                padding: 12px 20px;
+                border-radius: 8px;
+                z-index: 1000;
+                font-weight: bold;
+            `;
+            
+            document.body.appendChild(status);
+            
+            setTimeout(() => {
+                status.remove();
+            }, 3000);
         }
         
         // DEMANDE AUTORISATION NOTIFICATIONS
