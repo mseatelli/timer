@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chronomulti-Cuisson</title>
+    <style>
+        /* RESET ET BASE */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: #1a1a1a; 
+            color: white;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        /* LAYOUT PRINCIPAL */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        /* EN-TÊTE */
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            color: #ff6b35;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: #ccc;
+            font-size: 1.1em;
+        }
+        
+        /* ONGLETS */
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            background: #2d2d2d;
+            border-radius: 10px;
+            padding: 5px;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            background: transparent;
+            border: none;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 16px;
+        }
+        
+        .tab.active {
+            background: #ff6b35;
+            font-weight: bold;
+        }
+        
+        /* CONTENU DES ONGLETS */
+        .tab-content {
+            display: none;
+            background: #2d2d2d;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* FORMULAIRES */
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #ccc;
+            font-weight: 500;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: #3d3d3d;
+            color: white;
+            font-size: 16px;
+        }
+        
+        input:focus, select:focus {
+            outline: 2px solid #ff6b35;
+        }
+        
+        .time-inputs {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .time-inputs input {
+            text-align: center;
+        }
+        
+        button {
+            background: #ff6b35;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+            font-weight: 500;
+        }
+        
+        button:hover {
+            background: #e55a2b;
+            transform: translateY(-2px);
+        }
+        
+        /* MINUTERIES ACTIVES */
+        .timer-card {
+            background: #3d3d3d;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border-left: 4px solid #ff6b35;
+        }
+        
+        .timer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .timer-name {
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        
+        .timer-time {
+            font-size: 2em;
+            font-weight: bold;
+            text-align: center;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+            color: #ff6b35;
+        }
+        
+        .timer-controls {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn-pause { background: #ffa500; }
+        .btn-stop { background: #ff4444; }
+        .btn-resume { background: #44ff44; color: black; }
+        
+        /* PROGRESSION */
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #555;
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: #ff6b35;
+            transition: width 1s linear;
+        }
+        
+        /* CALCULATRICE POIDS */
+        .weight-result {
+            background: #4d4d4d;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            text-align: center;
+            font-size: 1.2em;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .no-timers {
+            text-align: center;
+            color: #888;
+            padding: 40px;
+            font-style: italic;
+        }
+        
+        /* FAVORIS */
+        .favorites-section {
+            margin-bottom: 20px;
+        }
+        
+        .favorites-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        
+        .favorite-btn {
+            background: #3d3d3d;
+            padding: 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+        }
+        
+        .favorite-btn:hover {
+            background: #4d4d4d;
+            border-color: #ff6b35;
+            transform: scale(1.05);
+        }
+        
+        .fav-icon {
+            font-size: 2.5em;
+        }
+        
+        .fav-name {
+            font-weight: 600;
+            font-size: 0.95em;
+            text-align: center;
+        }
+        
+        .fav-time {
+            color: #ff6b35;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+        
+        /* GESTION FAVORIS */
+        .edit-fav-item {
+            background: #4d4d4d;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .edit-fav-item input {
+            flex: 1;
+        }
+        
+        .edit-fav-item button {
+            padding: 8px 15px;
+            font-size: 14px;
+        }
+        
+        .btn-delete {
+            background: #ff4444;
+        }
+        
+        .btn-save {
+            background: #44ff44;
+            color: black;
+        }
+        
+        .btn-edit {
+            background: #ffa500;
+            padding: 5px 10px;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+        
+        .fav-actions {
+            display: flex;
+            gap: 5px;
+            justify-content: center;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .category-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .btn-add-fav {
+            background: #44ff44;
+            color: black;
+            padding: 5px 15px;
+            font-size: 14px;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        /* RESPONSIVE */
+        @media (max-width: 600px) {
+            .time-inputs {
+                flex-direction: column;
+            }
+            
+            .timer-controls {
+                flex-direction: column;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🍳 Chronomulti-Cuisson</h1>
+            <p>Gérez plusieurs cuissons simultanément</p>
+        </div>
+        
+        <!-- ONGLETS -->
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('timers')">⏱️ Minuteries</button>
+            <button class="tab" onclick="switchTab('favorites')">⭐ Favoris</button>
+            <button class="tab" onclick="switchTab('new-timer')">➕ Nouvelle Minuterie</button>
+            <button class="tab" onclick="switchTab('weight-calc')">🥩 Cuisson au Poids</button>
+        </div>
+        
+        <!-- CONTENU ONGLET MINUTERIES -->
+        <div id="timers" class="tab-content active">
+            <h2>⏱️ Minuteries Actives</h2>
+            <div id="active-timers">
+                <div class="no-timers">Aucune minuterie active</div>
+            </div>
+        </div>
+        
+        <!-- CONTENU ONGLET FAVORIS -->
+        <div id="favorites" class="tab-content">
+            <h2>⭐ Recettes Favorites</h2>
+            
+            <div class="favorites-section">
+                <h3 style="color: #ff6b35; margin-bottom: 15px;">🥚 Cuisson des Œufs</h3>
+                <div class="favorites-grid">
+                    <button class="favorite-btn" onclick="startFavorite('Œuf à la coque', 180)">
+                        <div class="fav-icon">🥚</div>
+                        <div class="fav-name">Œuf à la coque</div>
+                        <div class="fav-time">3 min</div>
+                    </button>
+                    <button class="favorite-btn" onclick="startFavorite('Œuf mollet', 360)">
+                        <div class="fav-icon">🥚</div>
+                        <div class="fav-name">Œuf mollet</div>
+                        <div class="fav-time">6 min</div>
+                    </button>
+                    <button class="favorite-btn" onclick="startFavorite('Œuf dur', 540)">
+                        <div class="fav-icon">🥚</div>
+                        <div class="fav-name">Œuf dur</div>
+                        <div class="fav-time">9 min</div>
+                    </button>
+                    <button class="favorite-btn" onclick="startFavorite('Œuf poché', 180)">
+                        <div class="fav-icon">🥚</div>
+                        <div class="fav-name">Œuf poché</div>
+                        <div class="fav-time">3 min</div>
+                    </button>
+                    <button class="favorite-btn" onclick="startFavorite('Œuf au plat', 240)">
+                        <div class="fav-icon">🍳</div>
+                        <div class="fav-name">Œuf au plat</div>
+                        <div class="fav-time">4 min</div>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="favorites-section" style="margin-top: 30px;">
+                <h3 style="color: #ff6b35; margin-bottom: 15px;">🍝 Pâtes & Riz</h3>
+                <div class="favorites-grid">
+                    <button class="favorite-btn" onclick="startFavorite('Pâtes al dente', 600)">
+                        <div class="fav-icon">🍝</div>
+                        <div class="fav-name">Pâtes al dente</div>
+                        <div class="fav-time">10 min</div>
+                    </button>
+                    <button class="favorite-btn" onclick="startFavorite('Riz basmati', 720)">
+                        <div class="fav-icon">🍚</div>
+                        <div class="fav-name">Riz basmati</div>
+                        <div class="fav-time">12 min</div>
+                    </button>
+                    <button class="favorite-btn" onclick="startFavorite('Riz complet', 1500)">
+                        <div class="fav-icon">🍚</div>
+                        <div class="fav-name">Riz complet</div>
+                        <div class="fav-time">25 min</div>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="favorites-section" style="margin-top: 30px;">
+                <h3 style="color: #ff6b35; margin-bottom: 15px;">🥦 Légumes</h3>
+                <div class="favorites-grid">
+                    <button class="favorite-btn" onclick="startFavorite('Pommes de terre vapeur', 1200)">
+                        <div class="fav-icon">🥔</div>
+                        <div class="fav-name">Pommes de terre</div>
+                        <div class="fav-time">20 min</div>
+                    </button>
+                    <button class="favorite-btn" onclick="startFavorite('Brocolis vapeur', 300)">
+                        <div class="fav-icon">🥦</div>
+                        <div class="fav-name">Brocolis</div>
+                        <div class="fav-time">5 min</div>
+                    </button>
+                    <button class="favorite-btn" onclick="startFavorite('Carottes vapeur', 480)">
+                        <div class="fav-icon">🥕</div>
+                        <div class="fav-name">Carottes</div>
+                        <div class="fav-time">8 min</div>
+                    </button>
+
+                </div>
+            </div>
+
+        </div>
+        
+        <!-- CONTENU ONGLET NOUVELLE MINUTERIE -->
+        <div id="new-timer" class="tab-content">
+            <h2>➕ Nouvelle Minuterie</h2>
+            <div class="form-group">
+                <label for="timer-name">Nom de la minuterie :</label>
+                <input type="text" id="timer-name" placeholder="Ex: Riz basmati, Sauce tomate...">
+            </div>
+            
+            <div class="form-group">
+                <label>Durée :</label>
+                <div class="time-inputs">
+                    <input type="number" id="hours" placeholder="Heures" min="0" value="0">
+                    <input type="number" id="minutes" placeholder="Minutes" min="0" value="10">
+                    <input type="number" id="seconds" placeholder="Secondes" min="0" value="0">
+                </div>
+            </div>
+            
+            <button onclick="createTimer()">🚀 Démarrer la minuterie</button>
+        </div>
+        
+        <!-- CONTENU ONGLET CALCUL POIDS -->
+        <div id="weight-calc" class="tab-content">
+            <h2>🥩 Calculateur de Cuisson</h2>
+            
+            <div class="form-group">
+                <label for="meat-type">Type de viande :</label>
+                <select id="meat-type" onchange="calculateWeightTime()">
+                    <option value="beef">Bœuf</option>
+                    <option value="lamb">Agneau</option>
+                    <option value="pork">Porc</option>
+                    <option value="chicken">Poulet</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="meat-cut">Morceau :</label>
+                <select id="meat-cut" onchange="calculateWeightTime()">
+                    <option value="roast">Rôti</option>
+                    <option value="fillet">Filet</option>
+                    <option value="leg">Gigot</option>
+                    <option value="shoulder">Épaule</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="weight">Poids (kg) :</label>
+                <input type="number" id="weight" step="0.1" min="0.1" value="1.5" oninput="calculateWeightTime()">
+            </div>
+            
+            <div class="form-group">
+                <label for="cooking-level">Cuisson désirée :</label>
+                <select id="cooking-level" onchange="calculateWeightTime()">
+                    <option value="blue">Bleu</option>
+                    <option value="rare">Saignant</option>
+                    <option value="medium">À point</option>
+                    <option value="well-done">Bien cuit</option>
+                </select>
+            </div>
+            
+            <div id="weight-result" class="weight-result hidden">
+                <div>⏱️ Temps de cuisson estimé :</div>
+                <div id="calculated-time" style="font-size: 1.5em; font-weight: bold; margin: 10px 0;"></div>
+                <button onclick="createTimerFromWeight()">📌 Créer la minuterie</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // BASE DE DONNÉES TEMPS DE CUISSON
+        const cookingTimes = {
+            beef: { blue: 30, rare: 40, medium: 50, "well-done": 60 },
+            lamb: { rare: 45, medium: 55, "well-done": 65 },
+            pork: { medium: 55, "well-done": 70 },
+            chicken: { "well-done": 45 }
+        };
+        
+        let activeTimers = [];
+        let editingFavId = null;
+        
+        // FAVORIS PAR DÉFAUT
+        let favorites = [
+            { id: 1, category: 'Cuisson des Œufs', icon: '🥚', name: 'Œuf à la coque', seconds: 180 },
+            { id: 2, category: 'Cuisson des Œufs', icon: '🥚', name: 'Œuf mollet', seconds: 360 },
+            { id: 3, category: 'Cuisson des Œufs', icon: '🥚', name: 'Œuf dur', seconds: 540 },
+            { id: 4, category: 'Cuisson des Œufs', icon: '🥚', name: 'Œuf poché', seconds: 180 },
+            { id: 5, category: 'Cuisson des Œufs', icon: '🍳', name: 'Œuf au plat', seconds: 240 },
+            { id: 6, category: 'Pâtes & Riz', icon: '🍝', name: 'Pâtes al dente', seconds: 600 },
+            { id: 7, category: 'Pâtes & Riz', icon: '🍚', name: 'Riz basmati', seconds: 720 },
+            { id: 8, category: 'Pâtes & Riz', icon: '🍚', name: 'Riz complet', seconds: 1500 },
+            { id: 9, category: 'Légumes', icon: '🥔', name: 'Pommes de terre vapeur', seconds: 1200 },
+            { id: 10, category: 'Légumes', icon: '🥦', name: 'Brocolis vapeur', seconds: 300 },
+            { id: 11, category: 'Légumes', icon: '🥕', name: 'Carottes vapeur', seconds: 480 },
+            { id: 12, category: 'Steaks à la Poêle', icon: '🥩', name: 'Steak bleu', seconds: 60 },
+            { id: 13, category: 'Steaks à la Poêle', icon: '🥩', name: 'Steak saignant', seconds: 120 },
+            { id: 14, category: 'Steaks à la Poêle', icon: '🥩', name: 'Steak à point', seconds: 180 },
+            { id: 15, category: 'Steaks à la Poêle', icon: '🥩', name: 'Steak bien cuit', seconds: 210 }
+        ];
+        
+        let nextFavId = 16;
+        
+        // GESTION DES ONGLETS
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.getElementById(tabName).classList.add('active');
+            
+            // Activer le bon onglet button
+            const tabButtons = document.querySelectorAll('.tab');
+            const tabNames = ['timers', 'favorites', 'manage-favorites', 'new-timer', 'weight-calc'];
+            const index = tabNames.indexOf(tabName);
+            if (index >= 0 && tabButtons[index]) {
+                tabButtons[index].classList.add('active');
+            }
+            
+            // Mettre à jour l'affichage des favoris si on ouvre cet onglet
+            if (tabName === 'favorites') {
+                displayFavorites();
+            } else if (tabName === 'manage-favorites') {
+                displayEditFavorites();
+            }
+        }
+        
+        // AFFICHER LES FAVORIS
+        function displayFavorites() {
+            const container = document.getElementById('favorites-container');
+            if (!container) return; // Protection si l'élément n'existe pas encore
+            
+            const categories = [...new Set(favorites.map(f => f.category))];
+            
+            container.innerHTML = categories.map(category => {
+                const categoryFavs = favorites.filter(f => f.category === category);
+                const categoryIcon = categoryFavs[0].icon;
+                
+                return `
+                    <div class="favorites-section" style="margin-top: ${category === categories[0] ? '0' : '30px'};">
+                        <h3 style="color: #ff6b35; margin-bottom: 15px;">${categoryIcon} ${category}</h3>
+                        <div class="favorites-grid">
+                            ${categoryFavs.map((fav, idx) => `
+                                <button class="favorite-btn" onclick="startFavoriteById(${favorites.indexOf(fav)})">
+                                    <div class="fav-icon">${fav.icon}</div>
+                                    <div class="fav-name">${fav.name}</div>
+                                    <div class="fav-time">${formatTimeShort(fav.seconds)}</div>
+                                </button>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // AFFICHER LISTE D'ÉDITION
+        function displayEditFavorites() {
+            const container = document.getElementById('edit-favorites-list');
+            
+            if (favorites.length === 0) {
+                container.innerHTML = '<p style="color: #888; text-align: center; padding: 20px;">Aucun favori</p>';
+                return;
+            }
+            
+            container.innerHTML = favorites.map((fav, idx) => `
+                <div class="edit-fav-item">
+                    <span style="font-size: 1.5em;">${fav.icon}</span>
+                    <input type="text" value="${fav.name}" id="edit-name-${idx}" style="flex: 2;">
+                    <input type="text" value="${fav.icon}" id="edit-icon-${idx}" maxlength="2" style="flex: 0 0 60px; text-align: center;">
+                    <input type="number" value="${Math.floor(fav.seconds / 60)}" id="edit-min-${idx}" placeholder="Min" min="0" style="flex: 0 0 80px;">
+                    <input type="number" value="${fav.seconds % 60}" id="edit-sec-${idx}" placeholder="Sec" min="0" max="59" style="flex: 0 0 80px;">
+                    <button class="btn-save" onclick="saveFavorite(${idx})">💾</button>
+                    <button class="btn-delete" onclick="deleteFavorite(${idx})">🗑️</button>
+                </div>
+            `).join('');
+        }
+        
+        // AJOUTER UN NOUVEAU FAVORI
+        function addNewFavorite() {
+            const category = document.getElementById('fav-category').value;
+            const icon = document.getElementById('fav-icon').value || '⭐';
+            const name = document.getElementById('fav-name').value;
+            const hours = parseInt(document.getElementById('fav-hours').value) || 0;
+            const minutes = parseInt(document.getElementById('fav-minutes').value) || 0;
+            const seconds = parseInt(document.getElementById('fav-seconds').value) || 0;
+            
+            const totalSeconds = hours * 3600 + minutes * 60 + seconds;
+            
+            if (!name || totalSeconds === 0) {
+                alert('Veuillez remplir le nom et la durée');
+                return;
+            }
+            
+            favorites.push({
+                category: category,
+                icon: icon,
+                name: name,
+                seconds: totalSeconds
+            });
+            
+            // Réinitialiser le formulaire
+            document.getElementById('fav-icon').value = '';
+            document.getElementById('fav-name').value = '';
+            document.getElementById('fav-hours').value = '0';
+            document.getElementById('fav-minutes').value = '5';
+            document.getElementById('fav-seconds').value = '0';
+            
+            displayEditFavorites();
+            alert('Favori ajouté !');
+        }
+        
+        // SAUVEGARDER MODIFICATION FAVORI
+        function saveFavorite(idx) {
+            const name = document.getElementById(`edit-name-${idx}`).value;
+            const icon = document.getElementById(`edit-icon-${idx}`).value;
+            const minutes = parseInt(document.getElementById(`edit-min-${idx}`).value) || 0;
+            const seconds = parseInt(document.getElementById(`edit-sec-${idx}`).value) || 0;
+            
+            if (!name) {
+                alert('Le nom ne peut pas être vide');
+                return;
+            }
+            
+            favorites[idx].name = name;
+            favorites[idx].icon = icon || '⭐';
+            favorites[idx].seconds = minutes * 60 + seconds;
+            
+            displayEditFavorites();
+            alert('Favori modifié !');
+        }
+        
+        // SUPPRIMER FAVORI
+        function deleteFavorite(idx) {
+            if (confirm(`Supprimer "${favorites[idx].name}" ?`)) {
+                favorites.splice(idx, 1);
+                displayEditFavorites();
+            }
+        }
+        
+        // FORMAT TEMPS COURT
+        function formatTimeShort(seconds) {
+            const hrs = Math.floor(seconds / 3600);
+            const mins = Math.floor((seconds % 3600) / 60);
+            const secs = seconds % 60;
+            
+            if (hrs > 0) {
+                return `${hrs}h ${mins}min`;
+            } else if (mins > 0 && secs > 0) {
+                return `${mins} min ${secs}s`;
+            } else if (mins > 0) {
+                return `${mins} min`;
+            } else {
+                return `${secs}s`;
+            }
+        }
+        
+        // DÉMARRER UN FAVORI PAR ID
+        function startFavoriteById(favId) {
+            const fav = favorites[favId];
+            if (!fav) return;
+            
+            addTimer(fav.name, fav.seconds);
+            
+            // Retour à l'onglet minuteries
+            showTab('timers');
+        }
+        
+        // DÉMARRER UN FAVORI (gardé pour compatibilité)
+        function startFavorite(name, seconds) {
+            addTimer(name, seconds);
+            
+            // Retour à l'onglet minuteries
+            showTab('timers');
+        }
+        
+        // CRÉATION MINUTERIE SIMPLE
+        function createTimer() {
+            const name = document.getElementById('timer-name').value || 'Minuterie';
+            const hours = parseInt(document.getElementById('hours').value) || 0;
+            const minutes = parseInt(document.getElementById('minutes').value) || 0;
+            const seconds = parseInt(document.getElementById('seconds').value) || 0;
+            
+            const totalSeconds = hours * 3600 + minutes * 60 + seconds;
+            
+            if (totalSeconds <= 0) {
+                alert('Veuillez définir une durée valide');
+                return;
+            }
+            
+            addTimer(name, totalSeconds);
+            
+            // Retour à l'onglet minuteries
+            switchTab('timers');
+            
+            // Réinitialiser le formulaire
+            document.getElementById('timer-name').value = '';
+            document.getElementById('hours').value = '0';
+            document.getElementById('minutes').value = '10';
+            document.getElementById('seconds').value = '0';
+        }
+        function calculateWeightTime() {
+            const meatType = document.getElementById('meat-type').value;
+            const weight = parseFloat(document.getElementById('weight').value);
+            const cookingLevel = document.getElementById('cooking-level').value;
+            
+            const timePerKg = cookingTimes[meatType][cookingLevel];
+            if (!timePerKg) {
+                document.getElementById('weight-result').classList.add('hidden');
+                return;
+            }
+            
+            const totalMinutes = Math.round(weight * timePerKg);
+            const hours = Math.floor(totalMinutes / 60);
+            const minutes = totalMinutes % 60;
+            
+            let timeString = '';
+            if (hours > 0) {
+                timeString += `${hours}h `;
+            }
+            timeString += `${minutes}min`;
+            
+            document.getElementById('calculated-time').textContent = timeString;
+            document.getElementById('weight-result').classList.remove('hidden');
+        }
+        
+        // CRÉER MINUTERIE DEPUIS CALCUL POIDS
+        function createTimerFromWeight() {
+            const meatType = document.getElementById('meat-type');
+            const meatCut = document.getElementById('meat-cut');
+            const weight = document.getElementById('weight').value;
+            const cookingLevel = document.getElementById('cooking-level');
+            
+            const name = `${meatCut.options[meatCut.selectedIndex].text} ${meatType.options[meatType.selectedIndex].text} ${weight}kg (${cookingLevel.options[cookingLevel.selectedIndex].text})`;
+            const timeText = document.getElementById('calculated-time').textContent;
+            
+            // Convertir le temps en secondes
+            const timeParts = timeText.split(' ');
+            let totalSeconds = 0;
+            
+            timeParts.forEach(part => {
+                if (part.includes('h')) {
+                    totalSeconds += parseInt(part) * 3600;
+                } else if (part.includes('min')) {
+                    totalSeconds += parseInt(part) * 60;
+                }
+            });
+            
+            addTimer(name, totalSeconds);
+            
+            // Retour à l'onglet minuteries
+            switchTab('timers');
+        }
+        
+        // AJOUTER UNE MINUTERIE
+        function addTimer(name, totalSeconds) {
+            const timer = {
+                id: Date.now(),
+                name: name,
+                totalSeconds: totalSeconds,
+                remainingSeconds: totalSeconds,
+                isRunning: true,
+                interval: null
+            };
+            
+            activeTimers.push(timer);
+            startTimer(timer);
+            updateTimersDisplay();
+        }
+        
+        // DÉMARRER UNE MINUTERIE
+        function startTimer(timer) {
+            timer.interval = setInterval(() => {
+                if (timer.isRunning && timer.remainingSeconds > 0) {
+                    timer.remainingSeconds--;
+                    updateTimersDisplay();
+                    
+                    if (timer.remainingSeconds === 0) {
+                        timerFinished(timer);
+                    }
+                }
+            }, 1000);
+        }
+        
+        // MINUTERIE TERMINÉE
+        function timerFinished(timer) {
+            clearInterval(timer.interval);
+            timer.isFinished = true;
+            
+            // Notification sonore continue jusqu'à l'arrêt
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                let beepInterval;
+                
+                const playBeep = (frequency, duration) => {
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    
+                    oscillator.frequency.value = frequency;
+                    oscillator.type = 'square';
+                    
+                    gainNode.gain.setValueAtTime(0.8, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+                    
+                    oscillator.start(audioContext.currentTime);
+                    oscillator.stop(audioContext.currentTime + duration);
+                };
+                
+                // Boucle de bips continue
+                let isHigh = true;
+                const beepLoop = () => {
+                    if (timer.isFinished) {
+                        playBeep(isHigh ? 1400 : 1000, 0.3);
+                        isHigh = !isHigh;
+                    }
+                };
+                
+                // Démarrer immédiatement
+                beepLoop();
+                beepInterval = setInterval(beepLoop, 600);
+                
+                // Stocker l'interval pour pouvoir l'arrêter
+                timer.beepInterval = beepInterval;
+                
+            } catch (e) {
+                console.log('Audio non supporté');
+            }
+            
+            // Notification navigateur
+            if ('Notification' in window && Notification.permission === 'granted') {
+                new Notification(`⏰ ${timer.name}`, {
+                    body: 'Votre minuterie est terminée !',
+                    icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">⏰</text></svg>'
+                });
+            }
+            
+            // Animation visuelle
+            const timerElement = document.querySelector(`[data-timer-id="${timer.id}"]`);
+            if (timerElement) {
+                timerElement.style.animation = 'pulse 1s infinite';
+                timerElement.style.borderColor = '#ff0000';
+            }
+            
+            // Message visible (pas d'alert bloquante pour ne pas couper le son)
+            updateTimersDisplay();
+        }
+        
+        // CONTRÔLES MINUTERIE
+        function pauseTimer(timerId) {
+            const timer = activeTimers.find(t => t.id === timerId);
+            if (timer) {
+                timer.isRunning = false;
+                updateTimersDisplay();
+            }
+        }
+        
+        function resumeTimer(timerId) {
+            const timer = activeTimers.find(t => t.id === timerId);
+            if (timer) {
+                timer.isRunning = true;
+                updateTimersDisplay();
+            }
+        }
+        
+        function stopTimer(timerId) {
+            const timer = activeTimers.find(t => t.id === timerId);
+            if (timer) {
+                clearInterval(timer.interval);
+                // Arrêter le son d'alarme si elle sonne
+                if (timer.beepInterval) {
+                    clearInterval(timer.beepInterval);
+                    timer.isFinished = false;
+                }
+                activeTimers = activeTimers.filter(t => t.id !== timerId);
+                updateTimersDisplay();
+            }
+        }
+        
+        // METTRE À JOUR L'AFFICHAGE
+        function updateTimersDisplay() {
+            const container = document.getElementById('active-timers');
+            
+            if (activeTimers.length === 0) {
+                container.innerHTML = '<div class="no-timers">Aucune minuterie active</div>';
+                return;
+            }
+            
+            container.innerHTML = activeTimers.map(timer => `
+                <div class="timer-card" data-timer-id="${timer.id}" style="${timer.isFinished ? 'background: #4d2020; border-color: #ff0000;' : ''}">
+                    <div class="timer-header">
+                        <div class="timer-name">${timer.name} ${timer.isFinished ? '⏰ TERMINÉE !' : ''}</div>
+                    </div>
+                    
+                    <div class="timer-time" style="${timer.isFinished ? 'color: #ff0000;' : ''}">
+                        ${timer.isFinished ? '00:00' : formatTime(timer.remainingSeconds)}
+                    </div>
+                    
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${timer.isFinished ? '100' : ((timer.totalSeconds - timer.remainingSeconds) / timer.totalSeconds) * 100}%"></div>
+                    </div>
+                    
+                    <div class="timer-controls">
+                        ${!timer.isFinished && timer.isRunning ? 
+                            `<button class="btn-pause" onclick="pauseTimer(${timer.id})">⏸️ Pause</button>` :
+                            !timer.isFinished ? `<button class="btn-resume" onclick="resumeTimer(${timer.id})">▶️ Reprendre</button>` : ''
+                        }
+                        <button class="btn-stop" onclick="stopTimer(${timer.id})">${timer.isFinished ? '🔕 ARRÊTER L\'ALARME' : '⏹️ Arrêter'}</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // FORMATAGE DU TEMPS
+        function formatTime(seconds) {
+            const hrs = Math.floor(seconds / 3600);
+            const mins = Math.floor((seconds % 3600) / 60);
+            const secs = seconds % 60;
+            
+            if (hrs > 0) {
+                return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            }
+            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+        
+        // DEMANDE AUTORISATION NOTIFICATIONS
+        if ('Notification' in window && Notification.permission === 'default') {
+            Notification.requestPermission();
+        }
+        
+        // INITIALISATION
+        window.addEventListener('DOMContentLoaded', () => {
+            calculateWeightTime();
+            displayFavorites();
+        });
+    </script>
+</body>
+</html>
