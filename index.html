@@ -3,28 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ma Cuisine - Sauvegarde & Export</title>
+    <title>Ma Cuisine Pro - Complet</title>
     <style>
         :root {
             --primary: #e67e22;
-            --bg: #fdfcfb; /* Teinte crème plus douce */
+            --bg: #fdfcfb;
             --card: #ffffff;
             --text: #2c3e50;
             --text-light: #7f8c8d;
             --border: #e9ecef;
-            --success: #27ae60;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); padding: 10px; }
         .container { max-width: 600px; margin: 0 auto; }
 
-        /* NAVIGATION & TABS */
+        /* NAVIGATION */
         .header { text-align: center; padding: 15px 0; }
         .header h1 { color: var(--primary); font-weight: 800; }
         
-        .tabs { display: flex; gap: 5px; background: #f1f1f1; padding: 5px; border-radius: 14px; margin-bottom: 20px; }
-        .tab { flex: 1; padding: 10px; border: none; background: none; cursor: pointer; border-radius: 10px; font-weight: 600; color: var(--text-light); transition: 0.2s; font-size: 0.9rem; }
+        .tabs { display: flex; gap: 5px; background: #f1f1f1; padding: 5px; border-radius: 14px; margin-bottom: 20px; overflow-x: auto; }
+        .tab { flex: 1; padding: 10px; border: none; background: none; cursor: pointer; border-radius: 10px; font-weight: 600; color: var(--text-light); transition: 0.2s; font-size: 0.85rem; white-space: nowrap; }
         .tab.active { background: white; color: var(--primary); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
 
         .tab-content { display: none; }
@@ -33,29 +32,29 @@
 
         /* CARTES */
         .card { background: var(--card); border-radius: 16px; padding: 18px; box-shadow: 0 2px 12px rgba(0,0,0,0.04); margin-bottom: 15px; border: 1px solid var(--border); }
-        .section-title { font-size: 1rem; font-weight: bold; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
-
-        /* FAVORIS */
-        .category-scroll { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 15px; scrollbar-width: none; }
-        .chip { padding: 8px 16px; border-radius: 20px; background: white; border: 1px solid var(--border); cursor: pointer; white-space: nowrap; font-size: 0.85rem; transition: 0.2s; }
-        .chip.active { background: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 4px 8px rgba(230, 126, 34, 0.3); }
-
-        .fav-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .fav-item { background: white; border: 1px solid var(--border); padding: 16px; border-radius: 14px; position: relative; cursor: pointer; text-align: center; }
-        .fav-item:hover { border-color: var(--primary); }
-        .del-fav { position: absolute; top: 5px; right: 5px; border: none; background: none; color: #e74c3c; cursor: pointer; padding: 5px; font-size: 1.2rem; }
+        .section-title { font-size: 1rem; font-weight: bold; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; color: var(--primary); }
 
         /* FORMULAIRES */
         label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 0.8rem; color: var(--text-light); text-transform: uppercase; }
-        input, select { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 10px; margin-bottom: 15px; outline: none; transition: 0.2s; }
-        input:focus { border-color: var(--primary); }
+        input, select { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 10px; margin-bottom: 15px; outline: none; font-size: 1rem; background: #fff; }
         
-        .btn { border: none; border-radius: 10px; font-weight: bold; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn { border: none; border-radius: 10px; font-weight: bold; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; }
         .btn-main { background: var(--primary); color: white; width: 100%; padding: 14px; }
         .btn-secondary { background: #f8f9fa; border: 1px solid var(--border); color: var(--text); padding: 10px; font-size: 0.85rem; flex: 1; }
-        .btn-danger { color: #e74c3c; font-size: 0.8rem; border: none; background: none; cursor: pointer; }
 
-        /* TIMERS ACTIFS */
+        /* CONSEILS & RESULTATS */
+        .advice-box { background: #fff9f2; padding: 15px; border-radius: 10px; border-left: 4px solid var(--primary); margin-bottom: 15px; font-size: 0.9rem; color: #5d4037; }
+        .result-zone { text-align: center; padding: 15px; background: #f8f9fa; border-radius: 12px; border: 1px dashed var(--primary); }
+
+        /* FAVORIS & PUCES */
+        .category-scroll { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 15px; scrollbar-width: none; }
+        .chip { padding: 8px 16px; border-radius: 20px; background: white; border: 1px solid var(--border); cursor: pointer; white-space: nowrap; font-size: 0.85rem; }
+        .chip.active { background: var(--primary); color: white; border-color: var(--primary); }
+        .fav-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .fav-item { background: white; border: 1px solid var(--border); padding: 16px; border-radius: 14px; position: relative; cursor: pointer; text-align: center; }
+        .del-fav { position: absolute; top: 5px; right: 5px; border: none; background: none; color: #e74c3c; cursor: pointer; font-size: 1.2rem; }
+
+        /* MINUTEURS */
         .urgent { background: #fff5f5 !important; border-color: #feb2b2 !important; animation: pulse 1s infinite; }
         .progress-bg { height: 6px; background: #eee; border-radius: 3px; margin: 12px 0; overflow: hidden; }
         .progress-bar { height: 100%; background: var(--primary); width: 0%; transition: width 1s linear; }
@@ -64,58 +63,70 @@
 <body>
 
 <div class="container">
-    <div class="header">
-        <h1>🍳 Ma Cuisine</h1>
-    </div>
+    <div class="header"><h1>🍳 Ma Cuisine</h1></div>
 
     <nav class="tabs">
-        <button class="tab active" onclick="showTab('tab-timers', this)">Minuteurs</button>
-        <button class="tab" onclick="showTab('tab-favs', this)">Favoris</button>
-        <button class="tab" onclick="showTab('tab-cats', this)">Réglages</button>
+        <button class="tab active" onclick="showTab('tab-timers', this)">⏱️ En cours</button>
+        <button class="tab" onclick="showTab('tab-favs', this)">⭐ Favoris</button>
+        <button class="tab" onclick="showTab('tab-calc', this)">🥩 Viandes/Conseils</button>
+        <button class="tab" onclick="showTab('tab-settings', this)">⚙️ Réglages</button>
     </nav>
 
     <div id="tab-timers" class="tab-content active">
-        <div id="timers-list" style="text-align:center; color:var(--text-light); padding:40px 20px;">
-            <p>Aucune cuisson en cours...</p>
-            <button class="btn btn-secondary" style="margin-top:15px;" onclick="showTab('tab-favs', document.querySelectorAll('.tab')[1])">Lancer un favori</button>
-        </div>
+        <div id="timers-list" style="text-align:center; color:var(--text-light); padding:40px 20px;">Aucune cuisson...</div>
     </div>
 
     <div id="tab-favs" class="tab-content">
         <div class="category-scroll" id="cat-chips"></div>
         <div class="fav-grid" id="fav-list"></div>
-        <button class="btn btn-main" style="margin-top:20px;" onclick="showTab('tab-new', null)">+ Ajouter une recette</button>
+        <button class="btn btn-main" style="margin-top:20px;" onclick="showTab('tab-new', null)">+ Ajouter manuellement</button>
+    </div>
+
+    <div id="tab-calc" class="tab-content">
+        <div class="card">
+            <div class="section-title">🍖 Calculateur de Cuisson</div>
+            <label>Type de viande / Aliment</label>
+            <select id="meat-type" onchange="updateMeatUI()"></select>
+            
+            <label id="weight-label">Poids (kg)</label>
+            <input type="number" id="weight-input" value="1.0" step="0.1" oninput="calculateCooking()">
+
+            <label id="level-label">Cuisson souhaitée</label>
+            <select id="cooking-level" onchange="calculateCooking()"></select>
+
+            <div id="meat-advice" class="advice-box"></div>
+
+            <div class="result-zone">
+                <div style="font-size:0.8rem; color:var(--text-light)">Temps estimé</div>
+                <div id="calc-result-time" style="font-size:2rem; font-weight:800; color:var(--primary); margin:5px 0;">00:00</div>
+                <button class="btn btn-main" onclick="startCalcTimer()">Lancer cette cuisson</button>
+            </div>
+        </div>
     </div>
 
     <div id="tab-new" class="tab-content">
         <div class="card">
-            <div class="section-title">✨ Nouvelle Recette</div>
-            <label>Nom de la préparation</label>
-            <input type="text" id="in-name" placeholder="Ex: Gratin de courgettes">
-            <label>Durée (minutes)</label>
-            <input type="number" id="in-time" value="20">
-            <label>Catégorie</label>
-            <select id="in-cat"></select>
-            <button class="btn btn-main" onclick="saveNewFav()">💾 Enregistrer</button>
-            <button class="btn btn-secondary" style="width:100%; margin-top:10px;" onclick="showTab('tab-favs', null)">Annuler</button>
+            <div class="section-title">✨ Nouveau Favori</div>
+            <label>Nom</label><input type="text" id="in-name" placeholder="Ex: Risotto">
+            <label>Durée (min)</label><input type="number" id="in-time" value="10">
+            <label>Catégorie</label><select id="in-cat"></select>
+            <button class="btn btn-main" onclick="saveNewFav()">Sauvegarder</button>
         </div>
     </div>
 
-    <div id="tab-cats" class="tab-content">
+    <div id="tab-settings" class="tab-content">
         <div class="card">
-            <div class="section-title">📁 Gérer les catégories</div>
+            <div class="section-title">📁 Catégories Personnalisées</div>
             <div style="display:flex; gap:5px; margin-bottom:15px;">
-                <input type="text" id="new-cat-name" placeholder="Nom..." style="margin:0;">
-                <button class="btn btn-main" style="width:auto;" onclick="addCategory()">Ajouter</button>
+                <input type="text" id="new-cat-name" placeholder="Ex: Fêtes" style="margin:0;">
+                <button class="btn btn-main" style="width:auto;" onclick="addCategory()">+</button>
             </div>
             <div id="manage-cats"></div>
         </div>
-
         <div class="card">
-            <div class="section-title">💾 Sauvegarde & Transfert</div>
-            <p style="font-size:0.8rem; color:var(--text-light); margin-bottom:15px;">Téléchargez vos données pour les restaurer plus tard ou sur un autre appareil.</p>
+            <div class="section-title">💾 Sauvegarde</div>
             <div style="display:flex; gap:10px;">
-                <button class="btn btn-secondary" onclick="exportData()">📤 Exporter (Fichier)</button>
+                <button class="btn btn-secondary" onclick="exportData()">📤 Exporter</button>
                 <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()">📥 Importer</button>
                 <input type="file" id="importFile" hidden onchange="importData(event)">
             </div>
@@ -124,65 +135,69 @@
 </div>
 
 <script>
-    let activeTimers = [];
-    let currentFilter = 'Tout';
-
-    // --- DONNÉES ---
-    const defaultData = {
-        cats: ['Tout', 'Œufs', 'Pâtes', 'Viandes', 'Poissons', 'Pâtisserie'],
-        favs: [{ id: 1, name: "Œuf mollet", time: 360, cat: "Œufs" }]
+    // --- BASE DE DONNÉES CULINAIRE ---
+    const COOKING_DB = {
+        beef: { name: "Bœuf", levels: { blue: 25, rare: 35, med: 45, done: 55 }, advice: "Sortez la viande 30 min avant. Repos sous alu après cuisson impératif pour la tendreté (10% du temps)." },
+        veal: { name: "Veau", levels: { med: 50, done: 60 }, advice: "Chair délicate. Arrosez souvent le rôti. Se déguste idéalement 'à point'." },
+        lamb: { name: "Agneau", levels: { pink: 40, med: 50, done: 60 }, advice: "Le gigot est meilleur 'Rosé'. Ail et romarin sont ses meilleurs amis." },
+        pork: { name: "Porc", levels: { done: 65 }, advice: "Doit toujours être cuit à cœur (Bien cuit). Pour un rôti moelleux, ne piquez pas la viande." },
+        chicken: { name: "Poulet (Entier)", levels: { done: 60 }, advice: "Environ 1h par kg à 180°C. Si le jus qui s'écoule est clair, c'est cuit !" },
+        duck: { name: "Canard (Entier)", levels: { rare: 45, med: 55 }, advice: "Chair grasse. Percez la peau pour laisser s'écouler la graisse durant la cuisson." },
+        turkey: { name: "Dinde / Pintade", levels: { done: 70 }, advice: "Chair maigre qui sèche vite. Privilégiez une cuisson lente ou arrosez toutes les 15 min." },
+        goose: { name: "Oie", levels: { done: 80 }, advice: "Cuisson très longue et grasse. Déposez-la sur une grille pour que la graisse tombe au fond du plat." }
     };
 
-    function loadAllData() {
-        const cats = JSON.parse(localStorage.getItem('cook_cats')) || defaultData.cats;
-        const favs = JSON.parse(localStorage.getItem('cook_favs')) || defaultData.favs;
-        return { cats, favs };
+    const LEVEL_NAMES = { blue: "Bleu", rare: "Saignant", med: "À point", done: "Bien cuit", pink: "Rosé" };
+
+    // --- INITIALISATION & STORAGE ---
+    let activeTimers = [];
+    let currentFilter = 'Tout';
+    let currentCalculatedSecs = 0;
+
+    const getStored = (key, def) => JSON.parse(localStorage.getItem(key)) || def;
+
+    function initMeatSelect() {
+        const select = document.getElementById('meat-type');
+        select.innerHTML = Object.keys(COOKING_DB).map(k => `<option value="${k}">${COOKING_DB[k].name}</option>`).join('');
+        updateMeatUI();
     }
 
-    // --- EXPORT / IMPORT ---
-    function exportData() {
-        const data = loadAllData();
-        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `sauvegarde_cuisine_${new Date().toISOString().slice(0,10)}.json`;
-        a.click();
+    function updateMeatUI() {
+        const type = document.getElementById('meat-type').value;
+        const data = COOKING_DB[type];
+        const levelSelect = document.getElementById('cooking-level');
+        
+        levelSelect.innerHTML = Object.keys(data.levels).map(l => 
+            `<option value="${data.levels[l]}">${LEVEL_NAMES[l] || l}</option>`
+        ).join('');
+        
+        document.getElementById('meat-advice').innerHTML = `<strong>Conseils :</strong><br>${data.advice}`;
+        calculateCooking();
     }
 
-    function importData(event) {
-        const file = event.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            try {
-                const data = JSON.parse(e.target.result);
-                if (data.cats && data.favs) {
-                    localStorage.setItem('cook_cats', JSON.stringify(data.cats));
-                    localStorage.setItem('cook_favs', JSON.stringify(data.favs));
-                    alert("Importation réussie !");
-                    location.reload();
-                }
-            } catch (err) { alert("Fichier invalide."); }
-        };
-        reader.readAsText(file);
+    function calculateCooking() {
+        const weight = parseFloat(document.getElementById('weight-input').value) || 0;
+        const minPerKg = parseFloat(document.getElementById('cooking-level').value);
+        currentCalculatedSecs = Math.round(weight * minPerKg * 60);
+        document.getElementById('calc-result-time').textContent = formatTime(currentCalculatedSecs);
     }
 
-    // --- LOGIQUE UI ---
-    function renderCats() {
-        const { cats } = loadAllData();
+    function startCalcTimer() {
+        const typeName = document.getElementById('meat-type').options[document.getElementById('meat-type').selectedIndex].text;
+        const levelName = document.getElementById('cooking-level').options[document.getElementById('cooking-level').selectedIndex].text;
+        createTimer(`${typeName} (${levelName})`, currentCalculatedSecs);
+    }
+
+    // --- GESTION DES CATÉGORIES & FAVS ---
+    function renderSettings() {
+        const cats = getStored('cook_cats', ['Tout', 'Œufs', 'Pâtes', 'Viandes', 'Poissons', 'Pâtisserie']);
         document.getElementById('cat-chips').innerHTML = cats.map(c => 
             `<div class="chip ${currentFilter === c ? 'active' : ''}" onclick="filterBy('${c}')">${c}</div>`
         ).join('');
-
-        document.getElementById('in-cat').innerHTML = cats.filter(c => c !== 'Tout').map(c => 
-            `<option value="${c}">${c}</option>`
-        ).join('');
-
+        document.getElementById('in-cat').innerHTML = cats.filter(c => c !== 'Tout').map(c => `<option value="${c}">${c}</option>`).join('');
         document.getElementById('manage-cats').innerHTML = cats.filter(c => c !== 'Tout').map(c => `
-            <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--border);">
-                <span>${c}</span>
-                <button class="btn-danger" onclick="removeCategory('${c}')">Supprimer</button>
+            <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid #eee;">
+                <span>${c}</span><button onclick="removeCat('${c}')" style="color:red; border:none; background:none;">✕</button>
             </div>
         `).join('');
     }
@@ -190,56 +205,49 @@
     function addCategory() {
         const name = document.getElementById('new-cat-name').value.trim();
         if (!name) return;
-        const { cats } = loadAllData();
-        if (!cats.includes(name)) {
-            cats.push(name);
-            localStorage.setItem('cook_cats', JSON.stringify(cats));
-            document.getElementById('new-cat-name').value = '';
-            renderCats();
-        }
+        const cats = getStored('cook_cats', []);
+        if (!cats.includes(name)) { cats.push(name); localStorage.setItem('cook_cats', JSON.stringify(cats)); }
+        document.getElementById('new-cat-name').value = '';
+        renderSettings();
     }
 
-    function removeCategory(name) {
-        const cats = loadAllData().cats.filter(c => c !== name);
+    function removeCat(name) {
+        const cats = getStored('cook_cats', []).filter(c => c !== name);
         localStorage.setItem('cook_cats', JSON.stringify(cats));
-        renderCats();
+        renderSettings();
     }
 
     function renderFavs() {
-        const { favs } = loadAllData();
-        const grid = document.getElementById('fav-list');
+        const favs = getStored('cook_favs', []);
         const filtered = currentFilter === 'Tout' ? favs : favs.filter(f => f.cat === currentFilter);
-
-        grid.innerHTML = filtered.map(f => `
+        document.getElementById('fav-list').innerHTML = filtered.map(f => `
             <div class="fav-item" onclick="createTimer('${f.name}', ${f.time})">
                 <button class="del-fav" onclick="event.stopPropagation(); deleteFav(${f.id})">×</button>
-                <div style="font-weight:bold; margin-bottom:4px;">${f.name}</div>
-                <div style="color:var(--primary); font-weight:700;">${f.time/60} min</div>
-                <div style="font-size:0.65rem; color:var(--text-light); margin-top:8px; text-transform:uppercase; letter-spacing:1px;">${f.cat}</div>
+                <div style="font-weight:bold;">${f.name}</div>
+                <div style="color:var(--primary); font-weight:bold;">${Math.floor(f.time/60)} min</div>
+                <div style="font-size:0.7rem; color:var(--text-light); text-transform:uppercase;">${f.cat}</div>
             </div>
         `).join('');
     }
 
     function saveNewFav() {
         const name = document.getElementById('in-name').value || "Sans nom";
-        const mins = parseInt(document.getElementById('in-time').value) || 1;
+        const time = (parseInt(document.getElementById('in-time').value) || 1) * 60;
         const cat = document.getElementById('in-cat').value;
-        const { favs } = loadAllData();
-        
-        favs.push({ id: Date.now(), name, time: mins * 60, cat });
+        const favs = getStored('cook_favs', []);
+        favs.push({ id: Date.now(), name, time, cat });
         localStorage.setItem('cook_favs', JSON.stringify(favs));
-        
         showTab('tab-favs', document.querySelectorAll('.tab')[1]);
         renderFavs();
     }
 
     function deleteFav(id) {
-        const favs = loadAllData().favs.filter(f => f.id !== id);
+        const favs = getStored('cook_favs', []).filter(f => f.id !== id);
         localStorage.setItem('cook_favs', JSON.stringify(favs));
         renderFavs();
     }
 
-    // --- MINUTEURS ---
+    // --- MOTEUR MINUTEUR ---
     function createTimer(name, secs) {
         activeTimers.push({ id: Date.now(), name, total: secs, rem: secs, state: 'run' });
         showTab('tab-timers', document.querySelectorAll('.tab')[0]);
@@ -256,16 +264,12 @@
     }, 1000);
 
     function startAlarm(t) {
-        const ctx = new AudioContext();
-        t.audio = ctx;
+        const ctx = new AudioContext(); t.audio = ctx;
         const beep = () => {
             if (t.state !== 'end') return;
-            const o = ctx.createOscillator();
-            const g = ctx.createGain();
-            o.type = 'square';
-            o.frequency.value = t.alt ? 800 : 500; t.alt = !t.alt;
-            g.gain.value = 0.1;
-            o.connect(g); g.connect(ctx.destination);
+            const o = ctx.createOscillator(); const g = ctx.createGain();
+            o.type = 'square'; o.frequency.value = t.alt ? 800 : 500; t.alt = !t.alt;
+            g.gain.value = 0.1; o.connect(g); g.connect(ctx.destination);
             o.start(); o.stop(ctx.currentTime + 0.2);
             setTimeout(beep, 400);
         };
@@ -274,19 +278,16 @@
 
     function updateTimerUI() {
         const list = document.getElementById('timers-list');
-        if (activeTimers.length === 0) {
-            list.innerHTML = `<p>Aucune cuisson...</p><button class="btn btn-secondary" style="margin-top:15px;" onclick="showTab('tab-favs', document.querySelectorAll('.tab')[1])">Lancer un favori</button>`;
-            return;
-        }
+        if (activeTimers.length === 0) { list.innerHTML = "Aucune cuisson..."; return; }
         list.innerHTML = activeTimers.map(t => `
             <div class="card ${t.state === 'end' ? 'urgent' : ''}">
                 <div style="display:flex; justify-content:space-between; align-items:center;">
                     <strong>${t.name}</strong>
-                    <span style="font-size:1.6rem; font-weight:800; color:var(--primary)">${Math.floor(t.rem/60)}:${(t.rem%60).toString().padStart(2,'0')}</span>
+                    <span style="font-size:1.6rem; font-weight:800; color:var(--primary)">${formatTime(t.rem)}</span>
                 </div>
                 <div class="progress-bg"><div class="progress-bar" style="width:${((t.total-t.rem)/t.total)*100}%"></div></div>
                 <button class="btn btn-main" style="background:${t.state==='end'?'#e74c3c':'#555'}" onclick="stopT(${t.id})">
-                    ${t.state === 'end' ? 'ARRÊTER L\'ALARME' : 'Annuler'}
+                    ${t.state === 'end' ? 'ARRÊTER' : 'Annuler'}
                 </button>
             </div>
         `).join('');
@@ -298,19 +299,38 @@
         activeTimers = activeTimers.filter(x => x.id !== id);
     }
 
+    // --- UTILS ---
+    function formatTime(s) { return `${Math.floor(s/60)}:${(s%60).toString().padStart(2,'0')}`; }
+    
     function showTab(id, btn) {
         document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-        if (btn) {
-            document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-        }
+        if (btn) { document.querySelectorAll('.tab').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
         document.getElementById(id).classList.add('active');
         if (id === 'tab-favs') renderFavs();
-        if (id === 'tab-cats') renderCats();
+        if (id === 'tab-settings') renderSettings();
     }
 
-    function filterBy(cat) { currentFilter = cat; renderCats(); renderFavs(); }
-    window.onload = () => { renderCats(); renderFavs(); };
+    function filterBy(cat) { currentFilter = cat; renderSettings(); renderFavs(); }
+
+    function exportData() {
+        const data = { cats: getStored('cook_cats', []), favs: getStored('cook_favs', []) };
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(new Blob([JSON.stringify(data)], {type:'application/json'}));
+        a.download = 'ma_cuisine.json'; a.click();
+    }
+
+    function importData(e) {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            const d = JSON.parse(ev.target.result);
+            localStorage.setItem('cook_cats', JSON.stringify(d.cats));
+            localStorage.setItem('cook_favs', JSON.stringify(d.favs));
+            location.reload();
+        };
+        reader.readAsText(e.target.files[0]);
+    }
+
+    window.onload = () => { initMeatSelect(); renderSettings(); renderFavs(); };
 </script>
 </body>
 </html>
