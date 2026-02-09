@@ -2,8 +2,8 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ma Cuisine Pro - v4</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Ma Cuisine Pro - Mobile Ready</title>
     <style>
         :root {
             --primary: #e67e22;
@@ -14,41 +14,60 @@
             --border: #e9ecef;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); padding: 10px; }
         .container { max-width: 600px; margin: 0 auto; }
 
-        .header { text-align: center; padding: 15px 0; }
-        .header h1 { color: var(--primary); font-weight: 800; }
+        .header { text-align: center; padding: 10px 0; }
+        .header h1 { color: var(--primary); font-weight: 800; font-size: 1.5rem; }
         
-        .tabs { display: flex; gap: 5px; background: #f1f1f1; padding: 5px; border-radius: 14px; margin-bottom: 20px; overflow-x: auto; }
-        .tab { flex: 1; padding: 10px; border: none; background: none; cursor: pointer; border-radius: 10px; font-weight: 600; color: var(--text-light); transition: 0.2s; font-size: 0.85rem; white-space: nowrap; }
+        /* TABS NAVIGATION */
+        .tabs { display: flex; gap: 5px; background: #f1f1f1; padding: 5px; border-radius: 14px; margin-bottom: 20px; overflow-x: auto; scrollbar-width: none; }
+        .tabs::-webkit-scrollbar { display: none; }
+        .tab { flex: 1; padding: 12px 8px; border: none; background: none; cursor: pointer; border-radius: 10px; font-weight: 600; color: var(--text-light); transition: 0.2s; font-size: 0.8rem; white-space: nowrap; }
         .tab.active { background: white; color: var(--primary); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
 
         .tab-content { display: none; }
-        .tab-content.active { display: block; animation: slideUp 0.3s ease-out; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .tab-content.active { display: block; }
 
-        .card { background: var(--card); border-radius: 16px; padding: 18px; box-shadow: 0 2px 12px rgba(0,0,0,0.04); margin-bottom: 15px; border: 1px solid var(--border); }
-        .section-title { font-size: 1rem; font-weight: bold; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; color: var(--primary); }
-
-        label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 0.8rem; color: var(--text-light); text-transform: uppercase; }
-        input, select { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 10px; margin-bottom: 15px; outline: none; font-size: 1rem; background: #fff; }
-        
-        .btn { border: none; border-radius: 10px; font-weight: bold; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
-        .btn-main { background: var(--primary); color: white; width: 100%; padding: 14px; }
-        .btn-secondary { background: #f8f9fa; border: 1px solid var(--border); color: var(--text); padding: 10px; font-size: 0.85rem; flex: 1; }
-
-        .advice-box { background: #fff9f2; padding: 15px; border-radius: 10px; border-left: 4px solid var(--primary); margin-bottom: 15px; font-size: 0.9rem; color: #5d4037; }
-        .result-zone { text-align: center; padding: 15px; background: #f8f9fa; border-radius: 12px; border: 1px dashed var(--primary); }
-
-        .category-scroll { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 15px; scrollbar-width: none; }
-        .chip { padding: 8px 16px; border-radius: 20px; background: white; border: 1px solid var(--border); cursor: pointer; white-space: nowrap; font-size: 0.85rem; }
+        /* CATEGORIES (CHIPS) - Correction visibilité Mobile */
+        .category-scroll { 
+            display: flex !important; 
+            gap: 8px; 
+            overflow-x: auto !important; 
+            padding: 5px 2px 15px 2px; 
+            margin-bottom: 10px; 
+            -webkit-overflow-scrolling: touch;
+            min-height: 50px;
+        }
+        .chip { 
+            display: inline-block;
+            padding: 8px 18px; 
+            border-radius: 20px; 
+            background: white; 
+            border: 1px solid var(--border); 
+            cursor: pointer; 
+            white-space: nowrap; 
+            font-size: 0.85rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
         .chip.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+        /* CARTES & GRILLE */
+        .card { background: var(--card); border-radius: 16px; padding: 18px; box-shadow: 0 2px 12px rgba(0,0,0,0.04); margin-bottom: 15px; border: 1px solid var(--border); }
         .fav-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .fav-item { background: white; border: 1px solid var(--border); padding: 16px; border-radius: 14px; position: relative; cursor: pointer; text-align: center; }
-        .del-fav { position: absolute; top: 5px; right: 5px; border: none; background: none; color: #e74c3c; cursor: pointer; font-size: 1.2rem; }
+        .del-fav { position: absolute; top: 0; right: 0; border: none; background: none; color: #e74c3c; padding: 10px; font-size: 1.2rem; }
 
+        /* FORMULAIRES */
+        label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 0.75rem; color: var(--text-light); text-transform: uppercase; }
+        input, select { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 10px; margin-bottom: 15px; font-size: 16px; /* Évite le zoom auto sur iOS */ background: #fff; color: var(--text); }
+        
+        .btn { border: none; border-radius: 10px; font-weight: bold; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; text-decoration: none; }
+        .btn-main { background: var(--primary); color: white; width: 100%; padding: 14px; }
+        .btn-secondary { background: #f8f9fa; border: 1px solid var(--border); color: var(--text); padding: 12px; font-size: 0.85rem; flex: 1; }
+
+        .advice-box { background: #fff9f2; padding: 15px; border-radius: 10px; border-left: 4px solid var(--primary); margin-bottom: 15px; font-size: 0.9rem; }
         .urgent { background: #fff5f5 !important; border-color: #feb2b2 !important; animation: pulse 1s infinite; }
         .progress-bg { height: 6px; background: #eee; border-radius: 3px; margin: 12px 0; overflow: hidden; }
         .progress-bar { height: 100%; background: var(--primary); width: 0%; transition: width 1s linear; }
@@ -58,17 +77,17 @@
 <body>
 
 <div class="container">
-    <div class="header"><h1>🍳 Ma Cuisine</h1></div>
+    <div class="header"><h1>Ma Cuisine</h1></div>
 
     <nav class="tabs">
-        <button class="tab active" onclick="showTab('tab-timers', this)">⏱️ En cours</button>
+        <button class="tab active" onclick="showTab('tab-timers', this)">⏱️ Cuissons</button>
         <button class="tab" onclick="showTab('tab-favs', this)">⭐ Favoris</button>
         <button class="tab" onclick="showTab('tab-calc', this)">🥩 Viandes</button>
         <button class="tab" onclick="showTab('tab-settings', this)">⚙️ Réglages</button>
     </nav>
 
     <div id="tab-timers" class="tab-content active">
-        <div id="timers-list" style="text-align:center; color:var(--text-light); padding:40px 20px;">Aucune cuisson...</div>
+        <div id="timers-list" style="text-align:center; color:var(--text-light); padding:30px;">Aucun minuteur...</div>
     </div>
 
     <div id="tab-favs" class="tab-content">
@@ -79,15 +98,14 @@
 
     <div id="tab-calc" class="tab-content">
         <div class="card">
-            <div class="section-title">🍖 Calculateur & Conseils</div>
-            <label>Type d'aliment</label>
+            <label>Viande</label>
             <select id="meat-type" onchange="updateMeatUI()"></select>
             <label>Poids (kg)</label>
             <input type="number" id="weight-input" value="1.0" step="0.1" oninput="calculateCooking()">
             <label>Cuisson</label>
             <select id="cooking-level" onchange="calculateCooking()"></select>
             <div id="meat-advice" class="advice-box"></div>
-            <div class="result-zone">
+            <div style="text-align:center; background:#f8f9fa; padding:15px; border-radius:12px; border:1px dashed var(--primary)">
                 <div id="calc-result-time" style="font-size:2rem; font-weight:800; color:var(--primary);">00:00</div>
                 <button class="btn btn-main" onclick="startCalcTimer()" style="margin-top:10px">Lancer</button>
             </div>
@@ -96,7 +114,6 @@
 
     <div id="tab-new" class="tab-content">
         <div class="card">
-            <div class="section-title">✨ Ajouter un favori</div>
             <label>Nom</label><input type="text" id="in-name" placeholder="Ex: Riz Basmati">
             <label>Durée (min)</label><input type="number" id="in-time" value="10">
             <label>Catégorie</label><select id="in-cat"></select>
@@ -106,33 +123,31 @@
 
     <div id="tab-settings" class="tab-content">
         <div class="card">
-            <div class="section-title">📁 Catégories</div>
+            <label>Ajouter une catégorie</label>
             <div style="display:flex; gap:5px; margin-bottom:15px;">
                 <input type="text" id="new-cat-name" placeholder="Ex: Riz" style="margin:0;">
-                <button class="btn btn-main" style="width:auto; padding:0 20px;" onclick="addCategory()">Ajouter</button>
+                <button class="btn btn-main" style="width:auto; padding:0 20px;" onclick="addCategory()">OK</button>
             </div>
             <div id="manage-cats"></div>
         </div>
         <div class="card">
-            <div class="section-title">💾 Sauvegarde</div>
+            <label>Sauvegarde</label>
             <div style="display:flex; gap:10px;">
-                <button class="btn btn-secondary" onclick="exportData()">📤 Exporter</button>
-                <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()">📥 Importer</button>
-                <input type="file" id="importFile" hidden onchange="importData(event)">
+                <button class="btn btn-secondary" onclick="exportData()">📤 Export</button>
+                <button class="btn btn-secondary" onclick="triggerImport()">📥 Import</button>
+                <input type="file" id="importFile" accept=".json,application/json,text/plain" hidden onchange="importData(event)">
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    // --- CONFIG & DONNÉES ---
     const COOKING_DB = {
-        beef: { name: "Bœuf", levels: { blue: 25, rare: 35, med: 45, done: 55 }, advice: "Sortez la viande 30 min avant. Repos sous alu 10% du temps de cuisson." },
-        veal: { name: "Veau", levels: { med: 50, done: 60 }, advice: "Chair délicate. Arrosez souvent le rôti." },
-        lamb: { name: "Agneau", levels: { pink: 40, med: 50, done: 60 }, advice: "Meilleur 'Rosé'. Ail et romarin conseillés." },
-        pork: { name: "Porc", levels: { done: 65 }, advice: "Doit toujours être cuit à cœur (Bien cuit)." },
-        chicken: { name: "Poulet", levels: { done: 60 }, advice: "1h/kg à 180°C. Chair tendre et peu grasse." },
-        duck: { name: "Canard", levels: { rare: 45, med: 55 }, advice: "Percez la peau pour évacuer la graisse." }
+        beef: { name: "Bœuf", levels: { blue: 25, rare: 35, med: 45, done: 55 }, advice: "Repos sous alu 10% du temps de cuisson." },
+        veal: { name: "Veau", levels: { med: 50, done: 60 }, advice: "Chair délicate. Arrosez souvent." },
+        lamb: { name: "Agneau", levels: { pink: 40, med: 50, done: 60 }, advice: "Meilleur 'Rosé'. Ail et romarin." },
+        pork: { name: "Porc", levels: { done: 65 }, advice: "Toujours cuire à cœur." },
+        chicken: { name: "Poulet", levels: { done: 60 }, advice: "1h/kg à 180°C." }
     };
 
     const LEVEL_NAMES = { blue: "Bleu", rare: "Saignant", med: "À point", done: "Bien cuit", pink: "Rosé" };
@@ -142,31 +157,21 @@
     let currentFilter = 'Tout';
     let currentCalculatedSecs = 0;
 
-    // --- MOTEUR DE STOCKAGE ---
     function getStored(key, def) {
         const val = localStorage.getItem(key);
-        if (!val || val === "undefined" || val === "null") return def;
+        if (!val || val === "null") return def;
         try { return JSON.parse(val); } catch(e) { return def; }
     }
 
-    // --- GESTION DES CATÉGORIES ---
     function renderSettings() {
         const cats = getStored('cook_cats', DEFAULT_CATS);
-        
-        // Chips de filtre
         document.getElementById('cat-chips').innerHTML = cats.map(c => 
             `<div class="chip ${currentFilter === c ? 'active' : ''}" onclick="filterBy('${c}')">${c}</div>`
         ).join('');
-
-        // Select dans formulaire
-        document.getElementById('in-cat').innerHTML = cats.filter(c => c !== 'Tout').map(c => 
-            `<option value="${c}">${c}</option>`
-        ).join('');
-
-        // Liste de gestion
+        document.getElementById('in-cat').innerHTML = cats.filter(c => c !== 'Tout').map(c => `<option value="${c}">${c}</option>`).join('');
         document.getElementById('manage-cats').innerHTML = cats.filter(c => c !== 'Tout').map(c => `
-            <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--border);">
-                <span>${c}</span><button onclick="removeCat('${c}')" style="color:red; border:none; background:none; cursor:pointer;">✕</button>
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid var(--border);">
+                <span>${c}</span><button onclick="removeCat('${c}')" style="color:red; border:none; background:none; font-size:1.2rem;">✕</button>
             </div>
         `).join('');
     }
@@ -175,7 +180,6 @@
         const input = document.getElementById('new-cat-name');
         const name = input.value.trim();
         if (!name) return;
-        
         let cats = getStored('cook_cats', DEFAULT_CATS);
         if (!cats.includes(name)) {
             cats.push(name);
@@ -193,18 +197,15 @@
         renderFavs();
     }
 
-    // --- FAVORIS ---
     function renderFavs() {
         const favs = getStored('cook_favs', []);
         const grid = document.getElementById('fav-list');
         const filtered = currentFilter === 'Tout' ? favs : favs.filter(f => f.cat === currentFilter);
-
         grid.innerHTML = filtered.map(f => `
             <div class="fav-item" onclick="createTimer('${f.name}', ${f.time})">
-                <button class="del-fav" onclick="event.stopPropagation(); deleteFav(${f.id})">×</button>
-                <div style="font-weight:bold;">${f.name}</div>
-                <div style="color:var(--primary); font-weight:bold;">${Math.floor(f.time/60)} min</div>
-                <div style="font-size:0.7rem; color:var(--text-light); margin-top:5px;">${f.cat}</div>
+                <button class="del-fav" onclick="event.stopPropagation(); deleteFav(${f.id})">✕</button>
+                <strong>${f.name}</strong>
+                <div style="color:var(--primary); font-weight:bold; margin-top:5px;">${Math.floor(f.time/60)} min</div>
             </div>
         `).join('');
     }
@@ -214,7 +215,6 @@
         const time = (parseInt(document.getElementById('in-time').value) || 1) * 60;
         const cat = document.getElementById('in-cat').value;
         let favs = getStored('cook_favs', []);
-        
         favs.push({ id: Date.now(), name, time, cat });
         localStorage.setItem('cook_favs', JSON.stringify(favs));
         showTab('tab-favs', document.querySelectorAll('.tab')[1]);
@@ -226,31 +226,26 @@
         renderFavs();
     }
 
-    // --- CALCULATEUR ---
     function updateMeatUI() {
         const type = document.getElementById('meat-type').value;
         const data = COOKING_DB[type];
-        const levelSelect = document.getElementById('cooking-level');
-        levelSelect.innerHTML = Object.keys(data.levels).map(l => `<option value="${data.levels[l]}">${LEVEL_NAMES[l] || l}</option>`).join('');
+        document.getElementById('cooking-level').innerHTML = Object.keys(data.levels).map(l => `<option value="${data.levels[l]}">${LEVEL_NAMES[l] || l}</option>`).join('');
         document.getElementById('meat-advice').innerHTML = `<strong>Conseils :</strong><br>${data.advice}`;
         calculateCooking();
     }
 
     function calculateCooking() {
         const weight = parseFloat(document.getElementById('weight-input').value) || 0;
-        const minPerKg = parseFloat(document.getElementById('cooking-level').value);
-        currentCalculatedSecs = Math.round(weight * minPerKg * 60);
+        const min = parseFloat(document.getElementById('cooking-level').value);
+        currentCalculatedSecs = Math.round(weight * min * 60);
         document.getElementById('calc-result-time').textContent = formatTime(currentCalculatedSecs);
     }
 
     function startCalcTimer() {
         const type = document.getElementById('meat-type');
-        const level = document.getElementById('cooking-level');
-        const name = `${type.options[type.selectedIndex].text} (${level.options[level.selectedIndex].text})`;
-        createTimer(name, currentCalculatedSecs);
+        createTimer(type.options[type.selectedIndex].text, currentCalculatedSecs);
     }
 
-    // --- MINUTEURS ---
     function createTimer(name, secs) {
         activeTimers.push({ id: Date.now(), name, total: secs, rem: secs, state: 'run' });
         showTab('tab-timers', document.querySelectorAll('.tab')[0]);
@@ -291,7 +286,7 @@
                 </div>
                 <div class="progress-bg"><div class="progress-bar" style="width:${((t.total-t.rem)/t.total)*100}%"></div></div>
                 <button class="btn btn-main" style="background:${t.state==='end'?'#e74c3c':'#555'}" onclick="stopT(${t.id})">
-                    ${t.state === 'end' ? 'ARRÊTER L\'ALARME' : 'Annuler'}
+                    ${t.state === 'end' ? 'STOP' : 'Annuler'}
                 </button>
             </div>
         `).join('');
@@ -303,7 +298,6 @@
         activeTimers = activeTimers.filter(x => x.id !== id);
     }
 
-    // --- NAVIGATION & INIT ---
     function showTab(id, btn) {
         document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
         if (btn) { document.querySelectorAll('.tab').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
@@ -317,28 +311,33 @@
 
     function exportData() {
         const data = { cats: getStored('cook_cats', DEFAULT_CATS), favs: getStored('cook_favs', []) };
+        const blob = new Blob([JSON.stringify(data)], {type:'application/json'});
         const a = document.createElement('a');
-        a.href = URL.createObjectURL(new Blob([JSON.stringify(data)], {type:'application/json'}));
-        a.download = 'ma_cuisine.json'; a.click();
+        a.href = URL.createObjectURL(blob);
+        a.download = 'sauvegarde_cuisine.json'; a.click();
     }
 
+    function triggerImport() { document.getElementById('importFile').click(); }
+
     function importData(e) {
+        const file = e.target.files[0];
+        if (!file) return;
         const reader = new FileReader();
         reader.onload = (ev) => {
-            const d = JSON.parse(ev.target.result);
-            localStorage.setItem('cook_cats', JSON.stringify(d.cats));
-            localStorage.setItem('cook_favs', JSON.stringify(d.favs));
-            location.reload();
+            try {
+                const d = JSON.parse(ev.target.result);
+                if (d.cats) localStorage.setItem('cook_cats', JSON.stringify(d.cats));
+                if (d.favs) localStorage.setItem('cook_favs', JSON.stringify(d.favs));
+                location.reload();
+            } catch(err) { alert("Fichier invalide"); }
         };
-        reader.readAsText(e.target.files[0]);
+        reader.readAsText(file);
     }
 
     window.onload = () => {
-        // Init viandes
         const mSelect = document.getElementById('meat-type');
         mSelect.innerHTML = Object.keys(COOKING_DB).map(k => `<option value="${k}">${COOKING_DB[k].name}</option>`).join('');
         updateMeatUI();
-        // Init UI
         renderSettings();
         renderFavs();
     };
