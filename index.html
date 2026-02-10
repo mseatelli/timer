@@ -3,309 +3,219 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Ma Cuisine - Mobile</title>
+    <title>Ma Cuisine Pro</title>
     <style>
-        :root { --primary: #e67e22; --bg: #fdfcfb; --card: #ffffff; --text: #2c3e50; --border: #e9ecef; }
+        :root { --primary: #e67e22; --bg: #fdfcfb; --card: #ffffff; --text: #2c3e50; --border: #ced4da; }
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); padding: 10px; }
-        .container { max-width: 600px; margin: 0 auto; }
-
-        .tabs { display: flex; background: #eee; padding: 4px; border-radius: 12px; margin-bottom: 15px; }
-        .tab { flex: 1; padding: 10px 5px; border: none; background: none; font-weight: bold; font-size: 0.8rem; border-radius: 8px; color: #777; }
+        body { font-family: sans-serif; background: var(--bg); color: var(--text); padding: 10px; }
+        
+        .tabs { display: flex; background: #eee; padding: 5px; border-radius: 12px; margin-bottom: 15px; }
+        .tab { flex: 1; padding: 12px 5px; border: none; background: none; font-weight: bold; font-size: 0.7rem; border-radius: 8px; color: #666; }
         .tab.active { background: white; color: var(--primary); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        /* NOUVEAU MENU MOBILE POUR CATEGORIES */
-        #mobile-cat-select {
-            width: 100%;
-            padding: 15px;
-            border-radius: 12px;
-            border: 2px solid var(--primary);
-            background: white;
-            font-size: 1rem;
-            font-weight: bold;
-            color: var(--primary);
-            margin-bottom: 15px;
+        select, input { 
+            display: block !important; width: 100%; padding: 15px; font-size: 16px; 
+            border: 2px solid var(--primary); border-radius: 12px; margin-bottom: 15px; background: white;
         }
 
-        .card { background: var(--card); border-radius: 16px; padding: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); border: 1px solid var(--border); margin-bottom: 15px; }
-        .fav-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .fav-item { background: white; border: 1px solid var(--border); padding: 15px; border-radius: 12px; text-align: center; position: relative; }
-        .del-fav { position: absolute; top: 0; right: 0; padding: 8px; color: #e74c3c; border: none; background: none; font-size: 1.2rem; }
-
-        label { display: block; font-size: 0.75rem; font-weight: bold; margin-bottom: 5px; color: #999; text-transform: uppercase; }
-        input, select { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 10px; margin-bottom: 15px; font-size: 16px; background: white; }
-        .btn { width: 100%; padding: 14px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; }
+        .card { background: var(--card); border-radius: 16px; padding: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border: 1px solid var(--border); margin-bottom: 15px; }
+        .btn { width: 100%; padding: 14px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; margin-bottom: 10px; }
         .btn-main { background: var(--primary); color: white; }
-        .btn-secondary { background: #f1f1f1; color: var(--text); margin-top: 5px; }
-
-        .urgent { background: #fff5f5 !important; border-color: #feb2b2 !important; animation: pulse 1s infinite; }
-        .progress-bg { height: 6px; background: #eee; border-radius: 3px; margin: 10px 0; overflow: hidden; }
-        .progress-bar { height: 100%; background: var(--primary); width: 0%; transition: width 1s linear; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.8; } }
+        .btn-sec { background: #f1f1f1; color: var(--text); }
+        
+        .cat-item { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #eee; align-items: center; }
+        #status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 5px; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="header" style="text-align:center; padding:10px;"><h1>🍳 Ma Cuisine</h1></div>
+<div style="max-width: 500px; margin: 0 auto;">
+    <div style="text-align:center; margin-bottom: 10px;">
+        <span id="status-dot" style="background: red;"></span>
+        <h2 style="display:inline; color:var(--primary);">Ma Cuisine 🍳</h2>
+    </div>
 
     <nav class="tabs">
-        <button class="tab active" onclick="showTab('tab-timers', this)">CUISSONS</button>
-        <button class="tab" onclick="showTab('tab-favs', this)">FAVORIS</button>
-        <button class="tab" onclick="showTab('tab-calc', this)">VIANDES</button>
-        <button class="tab" onclick="showTab('tab-settings', this)">RÉGLAGES</button>
+        <button class="tab active" onclick="showTab('timers', this)">CUISSONS</button>
+        <button class="tab" onclick="showTab('favs', this)">FAVORIS</button>
+        <button class="tab" onclick="showTab('add-f', this)">+ AJOUTER</button>
+        <button class="tab" onclick="showTab('sets', this)">RÉGLAGES</button>
     </nav>
 
-    <div id="tab-timers" class="tab-content active">
-        <div id="timers-list" style="text-align:center; padding:30px; color:#aaa;">Aucun minuteur...</div>
+    <div id="timers" class="tab-content active">
+        <div id="list-timers" style="text-align:center; padding:20px; color:#999;">Aucune cuisson en cours</div>
     </div>
 
-    <div id="tab-favs" class="tab-content">
-        <select id="mobile-cat-select" onchange="filterBy(this.value)"></select>
-        <div id="fav-list" class="fav-grid"></div>
-        <button class="btn btn-secondary" style="margin-top:15px" onclick="showTab('tab-new', null)">+ Ajouter Favori</button>
+    <div id="favs" class="tab-content">
+        <label style="font-size: 0.8rem; font-weight: bold;">CATÉGORIE :</label>
+        <select id="sel-filter" onchange="window.activeFilter = this.value; renderAll();"></select>
+        <div id="list-favs" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;"></div>
     </div>
 
-    <div id="tab-calc" class="tab-content">
+    <div id="add-f" class="tab-content">
         <div class="card">
-            <label>Viande</label><select id="meat-type" onchange="updateMeatUI()"></select>
-            <label>Poids (kg)</label><input type="number" id="weight-input" value="1.0" step="0.1" oninput="calculateCooking()">
-            <label>Cuisson</label><select id="cooking-level" onchange="calculateCooking()"></select>
-            <div id="meat-advice" style="font-size:0.85rem; padding:10px; background:#fff9f2; border-radius:8px; margin-bottom:15px;"></div>
-            <div style="text-align:center; padding:15px; background:#f8f9fa; border-radius:12px;">
-                <div id="calc-result-time" style="font-size:2rem; font-weight:800; color:var(--primary);">00:00</div>
-                <button class="btn btn-main" onclick="startCalcTimer()" style="margin-top:10px">Lancer</button>
-            </div>
+            <input type="text" id="f-name" placeholder="Nom (ex: Riz)">
+            <input type="number" id="f-time" placeholder="Minutes">
+            <label>Catégorie :</label>
+            <select id="f-cat"></select>
+            <button class="btn btn-main" onclick="saveFav()">ENREGISTRER</button>
         </div>
     </div>
 
-    <div id="tab-new" class="tab-content">
+    <div id="sets" class="tab-content">
         <div class="card">
-            <label>Nom</label><input type="text" id="in-name" placeholder="Ex: Riz Basmati">
-            <label>Durée (min)</label><input type="number" id="in-time" value="10">
-            <label>Catégorie</label><select id="in-cat"></select>
-            <button class="btn btn-main" onclick="saveNewFav()">Enregistrer</button>
+            <label>Nouvelle catégorie :</label>
+            <input type="text" id="new-cat-name">
+            <button class="btn btn-main" onclick="addCat()">AJOUTER LA CATÉGORIE</button>
         </div>
-    </div>
-
-    <div id="tab-settings" class="tab-content">
+        <div id="manage-cats" class="card"></div>
         <div class="card">
-            <label>Catégories</label>
-            <div style="display:flex; gap:5px; margin-bottom:15px;">
-                <input type="text" id="new-cat-name" placeholder="Ex: Riz" style="margin:0;">
-                <button class="btn btn-main" style="width:auto; padding:0 20px;" onclick="addCategory()">OK</button>
-            </div>
-            <div id="manage-cats"></div>
-        </div>
-        <div class="card">
-            <label>Données</label>
-            <div style="display:flex; gap:10px;">
-                <button class="btn btn-secondary" onclick="exportData()">📤 Export</button>
-                <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()">📥 Import</button>
-                <input type="file" id="importFile" accept=".json,text/plain" hidden onchange="importData(event)">
-            </div>
-            <button class="btn btn-secondary" style="margin-top:10px; color:red;" onclick="location.reload()">🔄 Rafraîchir l'app</button>
+            <button class="btn btn-sec" onclick="exportData()">📤 EXPORTER (.json)</button>
+            <button class="btn btn-sec" onclick="document.getElementById('import-file').click()">📥 IMPORTER (.json)</button>
+            <input type="file" id="import-file" hidden onchange="importData(event)">
         </div>
     </div>
 </div>
 
 <script>
-    const COOKING_DB = {
-        beef: { name: "Bœuf", levels: { blue: 25, rare: 35, med: 45, done: 55 }, advice: "Repos sous alu conseillé." },
-        veal: { name: "Veau", levels: { med: 50, done: 60 }, advice: "Chair délicate, arrosez souvent." },
-        chicken: { name: "Poulet", levels: { done: 60 }, advice: "1h par kg à 180°C." },
-        pork: { name: "Porc", levels: { done: 65 }, advice: "Cuire à cœur obligatoirement." }
-    };
+    // Configuration de base
+    const DEFS = ['Tout', 'Riz', 'Pâtes', 'Viandes', 'Légumes'];
+    window.activeFilter = 'Tout';
+    window.timers = [];
 
-    const DEFAULT_CATS = ['Tout', 'Œufs', 'Pâtes', 'Viandes', 'Poissons'];
-    let activeTimers = [];
-    let currentFilter = 'Tout';
+    // --- FONCTION DE RENDU UNIFIÉE (FORCE L'ÉCRITURE DANS LE DOM) ---
+    function renderAll() {
+        try {
+            // 1. Charger les données
+            const cats = JSON.parse(localStorage.getItem('cats')) || DEFS;
+            const favs = JSON.parse(localStorage.getItem('favs')) || [];
+            document.getElementById('status-dot').style.background = "green";
 
-    function getStored(key, def) {
-        const val = localStorage.getItem(key);
-        return (val && val !== "null") ? JSON.parse(val) : def;
-    }
+            // 2. Remplir le filtre (Favoris)
+            const selFilter = document.getElementById('sel-filter');
+            selFilter.innerHTML = cats.map(c => `<option value="${c}" ${window.activeFilter === c ? 'selected' : ''}>${c}</option>`).join('');
 
-    function renderSettings() {
-        const cats = getStored('cook_cats', DEFAULT_CATS);
-        
-        // Rendu du select mobile
-        const selectMobile = document.getElementById('mobile-cat-select');
-        selectMobile.innerHTML = cats.map(c => 
-            `<option value="${c}" ${currentFilter === c ? 'selected' : ''}>${c}</option>`
-        ).join('');
+            // 3. Remplir le choix de catégorie (Ajout)
+            const selAdd = document.getElementById('f-cat');
+            selAdd.innerHTML = cats.filter(c => c !== 'Tout').map(c => `<option value="${c}">${c}</option>`).join('');
 
-        document.getElementById('in-cat').innerHTML = cats.filter(c => c !== 'Tout').map(c => `<option value="${c}">${c}</option>`).join('');
-        
-        document.getElementById('manage-cats').innerHTML = cats.filter(c => c !== 'Tout').map(c => `
-            <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--border);">
-                <span>${c}</span><button onclick="removeCat('${c}')" style="color:red; border:none; background:none;">✕</button>
-            </div>
-        `).join('');
-    }
+            // 4. Remplir la gestion des catégories (Réglages)
+            const manageCats = document.getElementById('manage-cats');
+            manageCats.innerHTML = "<h4>Vos catégories :</h4>" + cats.filter(c => c !== 'Tout').map(c => `
+                <div class="cat-item">
+                    <span>${c}</span>
+                    <button onclick="delCat('${c}')" style="color:red; background:none; border:none; font-weight:bold;">Supprimer</button>
+                </div>
+            `).join('');
 
-    function addCategory() {
-        const input = document.getElementById('new-cat-name');
-        const name = input.value.trim();
-        if (!name) return;
-        let cats = getStored('cook_cats', DEFAULT_CATS);
-        if (!cats.includes(name)) {
-            cats.push(name);
-            localStorage.setItem('cook_cats', JSON.stringify(cats));
-            input.value = '';
-            renderSettings();
-            renderFavs();
+            // 5. Remplir la liste des favoris
+            const listFavs = document.getElementById('list-favs');
+            const filtered = window.activeFilter === 'Tout' ? favs : favs.filter(f => f.cat === window.activeFilter);
+            listFavs.innerHTML = filtered.map(f => `
+                <div class="card" onclick="startTimer('${f.name}', ${f.time})" style="text-align:center; cursor:pointer;">
+                    <strong>${f.name}</strong><br>
+                    <span style="color:var(--primary); font-weight:bold;">${Math.floor(f.time/60)} min</span>
+                    <div onclick="event.stopPropagation(); delFav(${f.id})" style="color:red; font-size:0.6rem; margin-top:5px;">Effacer</div>
+                </div>
+            `).join('');
+
+        } catch (e) {
+            document.getElementById('status-dot').style.background = "orange";
+            console.error("Erreur de rendu:", e);
         }
     }
 
-    function removeCat(name) {
-        let cats = getStored('cook_cats', DEFAULT_CATS).filter(c => c !== name);
-        localStorage.setItem('cook_cats', JSON.stringify(cats));
-        renderSettings();
-        renderFavs();
+    // --- ACTIONS ---
+    function addCat() {
+        const val = document.getElementById('new-cat-name').value.trim();
+        if (!val) return;
+        let cats = JSON.parse(localStorage.getItem('cats')) || DEFS;
+        if (!cats.includes(val)) {
+            cats.push(val);
+            localStorage.setItem('cats', JSON.stringify(cats));
+            document.getElementById('new-cat-name').value = '';
+            renderAll();
+        }
     }
 
-    function renderFavs() {
-        const favs = getStored('cook_favs', []);
-        const filtered = currentFilter === 'Tout' ? favs : favs.filter(f => f.cat === currentFilter);
-        document.getElementById('fav-list').innerHTML = filtered.map(f => `
-            <div class="fav-item" onclick="createTimer('${f.name}', ${f.time})">
-                <button class="del-fav" onclick="event.stopPropagation(); deleteFav(${f.id})">✕</button>
-                <strong>${f.name}</strong>
-                <div style="color:var(--primary); font-weight:bold; margin-top:5px;">${Math.floor(f.time/60)} min</div>
-            </div>
-        `).join('');
+    function delCat(name) {
+        let cats = (JSON.parse(localStorage.getItem('cats')) || DEFS).filter(c => c !== name);
+        localStorage.setItem('cats', JSON.stringify(cats));
+        renderAll();
     }
 
-    function saveNewFav() {
-        const name = document.getElementById('in-name').value || "Sans nom";
-        const time = (parseInt(document.getElementById('in-time').value) || 1) * 60;
-        const cat = document.getElementById('in-cat').value;
-        let favs = getStored('cook_favs', []);
+    function saveFav() {
+        const name = document.getElementById('f-name').value || "Sans nom";
+        const time = (parseInt(document.getElementById('f-time').value) || 1) * 60;
+        const cat = document.getElementById('f-cat').value;
+        let favs = JSON.parse(localStorage.getItem('favs')) || [];
         favs.push({ id: Date.now(), name, time, cat });
-        localStorage.setItem('cook_favs', JSON.stringify(favs));
-        showTab('tab-favs', document.querySelectorAll('.tab')[1]);
+        localStorage.setItem('favs', JSON.stringify(favs));
+        showTab('favs');
     }
 
-    function deleteFav(id) {
-        let favs = getStored('cook_favs', []).filter(f => f.id !== id);
-        localStorage.setItem('cook_favs', JSON.stringify(favs));
-        renderFavs();
+    function delFav(id) {
+        let favs = (JSON.parse(localStorage.getItem('favs')) || []).filter(f => f.id !== id);
+        localStorage.setItem('favs', JSON.stringify(favs));
+        renderAll();
     }
 
-    function updateMeatUI() {
-        const data = COOKING_DB[document.getElementById('meat-type').value];
-        document.getElementById('cooking-level').innerHTML = Object.keys(data.levels).map(l => `<option value="${data.levels[l]}">${l}</option>`).join('');
-        document.getElementById('meat-advice').innerHTML = data.advice;
-        calculateCooking();
+    function startTimer(name, secs) {
+        window.timers.push({ id: Date.now(), name, rem: secs, end: false });
+        showTab('timers');
     }
 
-    function calculateCooking() {
-        const weight = parseFloat(document.getElementById('weight-input').value) || 0;
-        const min = parseFloat(document.getElementById('cooking-level').value);
-        const secs = Math.round(weight * min * 60);
-        document.getElementById('calc-result-time').textContent = formatTime(secs);
-        window.tempSecs = secs;
-    }
-
-    function startCalcTimer() {
-        const type = document.getElementById('meat-type');
-        createTimer(type.options[type.selectedIndex].text, window.tempSecs);
-    }
-
-    function createTimer(name, secs) {
-        activeTimers.push({ id: Date.now(), name, total: secs, rem: secs, state: 'run' });
-        showTab('tab-timers', document.querySelectorAll('.tab')[0]);
-    }
-
+    // Boucle Minuteur
     setInterval(() => {
-        activeTimers.forEach(t => {
-            if (t.state === 'run' && t.rem > 0) {
-                t.rem--;
-                if (t.rem === 0) { t.state = 'end'; startAlarm(t); }
-            }
+        window.timers.forEach(t => {
+            if (t.rem > 0) t.rem--;
+            else if (!t.end) { t.end = true; alert("FIN : " + t.name); }
         });
-        updateTimerUI();
+        const container = document.getElementById('list-timers');
+        if (window.timers.length > 0) {
+            container.innerHTML = window.timers.map(t => `
+                <div class="card" style="${t.end?'border:2px solid red':''}">
+                    <b>${t.name}</b> : ${Math.floor(t.rem/60)}m ${(t.rem%60).toString().padStart(2,'0')}s
+                    <button onclick="window.timers = window.timers.filter(x=>x.id!==${t.id})" style="float:right;">X</button>
+                </div>
+            `).join('');
+        }
     }, 1000);
 
-    function startAlarm(t) {
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        t.audio = ctx;
-        const beep = () => {
-            if (t.state !== 'end') return;
-            const o = ctx.createOscillator(); const g = ctx.createGain();
-            o.type = 'square'; o.frequency.value = t.alt ? 800 : 500; t.alt = !t.alt;
-            g.gain.value = 0.1; o.connect(g); g.connect(ctx.destination);
-            o.start(); o.stop(ctx.currentTime + 0.2);
-            setTimeout(beep, 400);
-        };
-        beep();
-    }
-
-    function updateTimerUI() {
-        const list = document.getElementById('timers-list');
-        if (activeTimers.length === 0) { list.innerHTML = "Aucune cuisson..."; return; }
-        list.innerHTML = activeTimers.map(t => `
-            <div class="card ${t.state === 'end' ? 'urgent' : ''}">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <strong>${t.name}</strong>
-                    <span style="font-size:1.6rem; font-weight:800; color:var(--primary)">${formatTime(t.rem)}</span>
-                </div>
-                <div class="progress-bg"><div class="progress-bar" style="width:${((t.total-t.rem)/t.total)*100}%"></div></div>
-                <button class="btn btn-main" style="background:${t.state==='end'?'#e74c3c':'#555'}" onclick="stopT(${t.id})">STOP</button>
-            </div>
-        `).join('');
-    }
-
-    function stopT(id) {
-        const t = activeTimers.find(x => x.id === id);
-        if (t && t.audio) t.audio.close();
-        activeTimers = activeTimers.filter(x => x.id !== id);
-    }
-
+    // Navigation
     function showTab(id, btn) {
         document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-        if (btn) { document.querySelectorAll('.tab').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
         document.getElementById(id).classList.add('active');
-        if (id === 'tab-favs') renderFavs();
-        if (id === 'tab-settings') renderSettings();
+        if (btn) {
+            document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+        renderAll();
     }
 
-    function filterBy(cat) { currentFilter = cat; renderSettings(); renderFavs(); }
-    function formatTime(s) { return `${Math.floor(s/60)}:${(s%60).toString().padStart(2,'0')}`; }
-
+    // Import/Export
     function exportData() {
-        const data = { cats: getStored('cook_cats', DEFAULT_CATS), favs: getStored('cook_favs', []) };
-        const blob = new Blob([JSON.stringify(data)], {type:'application/json'});
+        const data = { cats: JSON.parse(localStorage.getItem('cats')) || DEFS, favs: JSON.parse(localStorage.getItem('favs')) || [] };
         const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = 'sauvegarde_cuisine.json'; a.click();
+        a.href = URL.createObjectURL(new Blob([JSON.stringify(data)], {type:'application/json'}));
+        a.download = 'ma_cuisine.json'; a.click();
     }
 
     function importData(e) {
-        const file = e.target.files[0];
-        if (!file) return;
         const reader = new FileReader();
         reader.onload = (ev) => {
-            try {
-                const d = JSON.parse(ev.target.result);
-                if (d.cats) localStorage.setItem('cook_cats', JSON.stringify(d.cats));
-                if (d.favs) localStorage.setItem('cook_favs', JSON.stringify(d.favs));
-                location.reload();
-            } catch(err) { alert("Erreur de fichier"); }
+            const d = JSON.parse(ev.target.result);
+            localStorage.setItem('cats', JSON.stringify(d.cats));
+            localStorage.setItem('favs', JSON.stringify(d.favs));
+            location.reload();
         };
-        reader.readAsText(file);
+        reader.readAsText(e.target.files[0]);
     }
 
-    window.onload = () => {
-        const mSelect = document.getElementById('meat-type');
-        mSelect.innerHTML = Object.keys(COOKING_DB).map(k => `<option value="${k}">${COOKING_DB[k].name}</option>`).join('');
-        updateMeatUI();
-        renderSettings();
-        renderFavs();
-    };
+    // Lancement
+    window.onload = renderAll;
 </script>
 </body>
 </html>
