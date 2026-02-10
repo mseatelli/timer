@@ -3,39 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Ma Cuisine Pro</title>
+    <title>Ma Cuisine - Final Fix</title>
     <style>
         :root { --primary: #e67e22; --bg: #fdfcfb; --card: #ffffff; --text: #2c3e50; --border: #ced4da; }
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { font-family: sans-serif; background: var(--bg); color: var(--text); padding: 10px; }
-        
         .tabs { display: flex; background: #eee; padding: 5px; border-radius: 12px; margin-bottom: 15px; }
         .tab { flex: 1; padding: 12px 5px; border: none; background: none; font-weight: bold; font-size: 0.7rem; border-radius: 8px; color: #666; }
         .tab.active { background: white; color: var(--primary); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
-
-        select, input { 
-            display: block !important; width: 100%; padding: 15px; font-size: 16px; 
-            border: 2px solid var(--primary); border-radius: 12px; margin-bottom: 15px; background: white;
-        }
-
+        select, input, textarea { display: block !important; width: 100%; padding: 15px; font-size: 16px; border: 2px solid var(--primary); border-radius: 12px; margin-bottom: 15px; background: white; }
         .card { background: var(--card); border-radius: 16px; padding: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border: 1px solid var(--border); margin-bottom: 15px; }
         .btn { width: 100%; padding: 14px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; margin-bottom: 10px; }
         .btn-main { background: var(--primary); color: white; }
         .btn-sec { background: #f1f1f1; color: var(--text); }
-        
         .cat-item { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #eee; align-items: center; }
-        #status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 5px; }
     </style>
 </head>
 <body>
 
 <div style="max-width: 500px; margin: 0 auto;">
-    <div style="text-align:center; margin-bottom: 10px;">
-        <span id="status-dot" style="background: green;"></span>
-        <h2 style="display:inline; color:var(--primary);">Ma Cuisine 🍳</h2>
-    </div>
+    <h2 style="text-align:center; color:var(--primary); margin-bottom:15px;">Ma Cuisine 🍳</h2>
 
     <nav class="tabs">
         <button class="tab active" onclick="showTab('timers', this)">CUISSONS</button>
@@ -44,21 +33,18 @@
         <button class="tab" onclick="showTab('sets', this)">RÉGLAGES</button>
     </nav>
 
-    <div id="timers" class="tab-content active">
-        <div id="list-timers" style="text-align:center; padding:20px; color:#999;">Aucune cuisson en cours</div>
-    </div>
+    <div id="timers" class="tab-content active"><div id="list-timers" style="text-align:center; padding:20px; color:#999;">Aucune cuisson...</div></div>
 
     <div id="favs" class="tab-content">
-        <label style="font-size: 0.8rem; font-weight: bold;">CATÉGORIE :</label>
+        <label>FILTRE :</label>
         <select id="sel-filter" onchange="window.activeFilter = this.value; renderAll();"></select>
         <div id="list-favs" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;"></div>
     </div>
 
     <div id="add-f" class="tab-content">
         <div class="card">
-            <input type="text" id="f-name" placeholder="Nom (ex: Riz)">
+            <input type="text" id="f-name" placeholder="Nom">
             <input type="number" id="f-time" placeholder="Minutes">
-            <label>Catégorie :</label>
             <select id="f-cat"></select>
             <button class="btn btn-main" onclick="saveFav()">ENREGISTRER</button>
         </div>
@@ -72,10 +58,10 @@
         </div>
         <div id="manage-cats" class="card"></div>
         <div class="card">
-            <button class="btn btn-sec" onclick="exportData()">📤 EXPORTER (.json)</button>
-            <p style="font-size: 0.7rem; color: #777; text-align: center; margin-bottom: 5px;">Note: Sur mobile, choisissez "Fichiers" après avoir cliqué ci-dessous</p>
-            <button class="btn btn-sec" onclick="document.getElementById('import-file').click()">📥 IMPORTER (.json)</button>
-            <input type="file" id="import-file" accept=".json,application/json,text/plain,*/*" hidden onchange="importData(event)">
+            <button class="btn btn-sec" onclick="exportData()">📤 EXPORTER (Télécharger)</button>
+            <p style="font-size: 0.75rem; font-weight: bold; margin-bottom: 10px; color: var(--primary);">IMPORTATION MANUELLE :</p>
+            <textarea id="import-text" style="height:80px; font-size:12px; border:1px solid #ccc;" placeholder="Ouvrez votre fichier .json, copiez tout le texte et collez-le ici..."></textarea>
+            <button class="btn btn-main" style="background:#27ae60;" onclick="importFromText()">📥 VALIDER L'IMPORT</button>
         </div>
     </div>
 </div>
@@ -86,29 +72,19 @@
     window.timers = [];
 
     function renderAll() {
-        try {
-            const cats = JSON.parse(localStorage.getItem('cats')) || DEFS;
-            const favs = JSON.parse(localStorage.getItem('favs')) || [];
-            
-            document.getElementById('sel-filter').innerHTML = cats.map(c => `<option value="${c}" ${window.activeFilter === c ? 'selected' : ''}>${c}</option>`).join('');
-            document.getElementById('f-cat').innerHTML = cats.filter(c => c !== 'Tout').map(c => `<option value="${c}">${c}</option>`).join('');
-            
-            document.getElementById('manage-cats').innerHTML = "<h4>Vos catégories :</h4>" + cats.filter(c => c !== 'Tout').map(c => `
-                <div class="cat-item">
-                    <span>${c}</span>
-                    <button onclick="delCat('${c}')" style="color:red; background:none; border:none; font-weight:bold;">Supprimer</button>
-                </div>
-            `).join('');
+        const cats = JSON.parse(localStorage.getItem('cats')) || DEFS;
+        const favs = JSON.parse(localStorage.getItem('favs')) || [];
+        
+        document.getElementById('sel-filter').innerHTML = cats.map(c => `<option value="${c}" ${window.activeFilter === c ? 'selected' : ''}>${c}</option>`).join('');
+        document.getElementById('f-cat').innerHTML = cats.filter(c => c !== 'Tout').map(c => `<option value="${c}">${c}</option>`).join('');
+        document.getElementById('manage-cats').innerHTML = "<h4>Vos catégories :</h4>" + cats.filter(c => c !== 'Tout').map(c => `<div class="cat-item"><span>${c}</span><button onclick="delCat('${c}')" style="color:red; background:none; border:none;">✕</button></div>`).join('');
 
-            const filtered = window.activeFilter === 'Tout' ? favs : favs.filter(f => f.cat === window.activeFilter);
-            document.getElementById('list-favs').innerHTML = filtered.map(f => `
-                <div class="card" onclick="startTimer('${f.name}', ${f.time})" style="text-align:center;">
-                    <strong>${f.name}</strong><br>
-                    <span style="color:var(--primary); font-weight:bold;">${Math.floor(f.time/60)} min</span>
-                    <div onclick="event.stopPropagation(); delFav(${f.id})" style="color:red; font-size:0.6rem; margin-top:5px;">Effacer</div>
-                </div>
-            `).join('');
-        } catch (e) { console.error(e); }
+        const filtered = window.activeFilter === 'Tout' ? favs : favs.filter(f => f.cat === window.activeFilter);
+        document.getElementById('list-favs').innerHTML = filtered.map(f => `
+            <div class="card" onclick="startTimer('${f.name}', ${f.time})" style="text-align:center;">
+                <strong>${f.name}</strong><br><span>${Math.floor(f.time/60)} min</span>
+                <div onclick="event.stopPropagation(); delFav(${f.id})" style="color:red; font-size:0.6rem; margin-top:5px;">Effacer</div>
+            </div>`).join('');
     }
 
     function addCat() {
@@ -151,12 +127,7 @@
         window.timers.forEach(t => { if (t.rem > 0) t.rem--; else if (!t.end) { t.end = true; alert("FIN : " + t.name); } });
         const container = document.getElementById('list-timers');
         if (window.timers.length > 0) {
-            container.innerHTML = window.timers.map(t => `
-                <div class="card" style="${t.end?'border:2px solid red':''}">
-                    <b>${t.name}</b> : ${Math.floor(t.rem/60)}m ${(t.rem%60).toString().padStart(2,'0')}s
-                    <button onclick="window.timers = window.timers.filter(x=>x.id!==${t.id})" style="float:right;">X</button>
-                </div>
-            `).join('');
+            container.innerHTML = window.timers.map(t => `<div class="card" style="${t.end?'border:2px solid red':''}"><b>${t.name}</b> : ${Math.floor(t.rem/60)}m ${(t.rem%60).toString().padStart(2,'0')}s<button onclick="window.timers = window.timers.filter(x=>x.id!==${t.id})" style="float:right;">X</button></div>`).join('');
         }
     }, 1000);
 
@@ -171,18 +142,21 @@
         const data = { cats: JSON.parse(localStorage.getItem('cats')) || DEFS, favs: JSON.parse(localStorage.getItem('favs')) || [] };
         const a = document.createElement('a');
         a.href = URL.createObjectURL(new Blob([JSON.stringify(data)], {type:'application/json'}));
-        a.download = 'ma_cuisine.json'; a.click();
+        a.download = 'sauvegarde.json'; a.click();
     }
 
-    function importData(e) {
-        const reader = new FileReader();
-        reader.onload = (ev) => {
-            const d = JSON.parse(ev.target.result);
-            localStorage.setItem('cats', JSON.stringify(d.cats));
-            localStorage.setItem('favs', JSON.stringify(d.favs));
+    // --- NOUVELLE FONCTION D'IMPORTATION ---
+    function importFromText() {
+        const text = document.getElementById('import-text').value;
+        try {
+            const d = JSON.parse(text);
+            if (d.cats) localStorage.setItem('cats', JSON.stringify(d.cats));
+            if (d.favs) localStorage.setItem('favs', JSON.stringify(d.favs));
+            alert("Importation réussie !");
             location.reload();
-        };
-        reader.readAsText(e.target.files[0]);
+        } catch(e) {
+            alert("Erreur : le texte collé n'est pas valide. Assurez-vous de bien copier l'intégralité du texte du fichier .json.");
+        }
     }
 
     window.onload = renderAll;
