@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Ma Cuisine - Final Fix</title>
+    <title>Ma Cuisine - Alarme Fix</title>
     <style>
         :root { --primary: #e67e22; --bg: #fdfcfb; --card: #ffffff; --text: #2c3e50; --border: #ced4da; }
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -13,12 +13,14 @@
         .tab.active { background: white; color: var(--primary); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
-        select, input, textarea { display: block !important; width: 100%; padding: 15px; font-size: 16px; border: 2px solid var(--primary); border-radius: 12px; margin-bottom: 15px; background: white; }
-        .card { background: var(--card); border-radius: 16px; padding: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border: 1px solid var(--border); margin-bottom: 15px; }
+        .card { background: var(--card); border-radius: 16px; padding: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border: 1px solid var(--border); margin-bottom: 15px; position: relative; }
         .btn { width: 100%; padding: 14px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; margin-bottom: 10px; }
         .btn-main { background: var(--primary); color: white; }
         .btn-sec { background: #f1f1f1; color: var(--text); }
-        .cat-item { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #eee; align-items: center; }
+        select, input, textarea { display: block; width: 100%; padding: 15px; font-size: 16px; border: 2px solid var(--primary); border-radius: 12px; margin-bottom: 15px; }
+        .urgent { border: 2px solid #e74c3c !important; background: #fff5f5; animation: blink 1s infinite; }
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
+        .btn-del-timer { background: #eee; color: #555; border: none; padding: 5px 10px; border-radius: 5px; font-size: 0.8rem; }
     </style>
 </head>
 <body>
@@ -33,10 +35,11 @@
         <button class="tab" onclick="showTab('sets', this)">RÉGLAGES</button>
     </nav>
 
-    <div id="timers" class="tab-content active"><div id="list-timers" style="text-align:center; padding:20px; color:#999;">Aucune cuisson...</div></div>
+    <div id="timers" class="tab-content active">
+        <div id="list-timers" style="text-align:center; padding:20px; color:#999;">Aucune cuisson...</div>
+    </div>
 
     <div id="favs" class="tab-content">
-        <label>FILTRE :</label>
         <select id="sel-filter" onchange="window.activeFilter = this.value; renderAll();"></select>
         <div id="list-favs" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;"></div>
     </div>
@@ -52,32 +55,94 @@
 
     <div id="sets" class="tab-content">
         <div class="card">
-            <label>Nouvelle catégorie :</label>
-            <input type="text" id="new-cat-name">
+            <input type="text" id="new-cat-name" placeholder="Nouvelle catégorie">
             <button class="btn btn-main" onclick="addCat()">AJOUTER</button>
         </div>
         <div id="manage-cats" class="card"></div>
         <div class="card">
-            <button class="btn btn-sec" onclick="exportData()">📤 EXPORTER (Télécharger)</button>
-            <p style="font-size: 0.75rem; font-weight: bold; margin-bottom: 10px; color: var(--primary);">IMPORTATION MANUELLE :</p>
-            <textarea id="import-text" style="height:80px; font-size:12px; border:1px solid #ccc;" placeholder="Ouvrez votre fichier .json, copiez tout le texte et collez-le ici..."></textarea>
-            <button class="btn btn-main" style="background:#27ae60;" onclick="importFromText()">📥 VALIDER L'IMPORT</button>
+            <button class="btn btn-sec" onclick="exportData()">📤 EXPORTER</button>
+            <textarea id="import-text" style="height:60px; font-size:10px;" placeholder="Collez le JSON ici..."></textarea>
+            <button class="btn btn-main" style="background:#27ae60;" onclick="importFromText()">📥 IMPORTER</button>
         </div>
     </div>
 </div>
 
 <script>
-    const DEFS = ['Tout', 'Riz', 'Pâtes', 'Viandes', 'Légumes'];
+    const DEFS = ['Tout', 'Riz', 'Pâtes', 'Viandes', 'Légumes', 'Oeufs'];
     window.activeFilter = 'Tout';
-    window.timers = [];
+    window.activeTimers = [];
 
+    // --- AUDIO ---
+    function playBeep() {
+        try {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(880, ctx.currentTime);
+            gain.gain.setValueAtTime(0.1, ctx.currentTime);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start();
+            osc.stop(ctx.currentTime + 0.5);
+        } catch(e) { console.log("Audio bloqué"); }
+    }
+
+    // --- LOGIQUE TIMER ---
+    function startTimer(name, secs) {
+        window.activeTimers.push({ id: Date.now(), name, rem: secs, finished: false });
+        showTab('timers');
+    }
+
+    function removeTimer(id) {
+        window.activeTimers = window.activeTimers.filter(t => t.id !== id);
+        updateTimersUI();
+    }
+
+    setInterval(() => {
+        window.activeTimers.forEach(t => {
+            if (t.rem > 0) {
+                t.rem--;
+            } else if (!t.finished) {
+                t.finished = true;
+                playBeep();
+            }
+        });
+        if (window.activeTimers.some(t => t.finished)) playBeep();
+        updateTimersUI();
+    }, 1000);
+
+    function updateTimersUI() {
+        const container = document.getElementById('list-timers');
+        if (window.activeTimers.length === 0) {
+            container.innerHTML = "Aucune cuisson...";
+            return;
+        }
+        container.innerHTML = window.activeTimers.map(t => `
+            <div class="card ${t.finished ? 'urgent' : ''}">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <strong>${t.name}</strong>
+                    <button class="btn-del-timer" onclick="removeTimer(${t.id})">ANNULER / X</button>
+                </div>
+                <div style="font-size:2rem; font-weight:bold; color:var(--primary); margin:10px 0;">
+                    ${Math.floor(t.rem/60)}:${(t.rem%60).toString().padStart(2,'0')}
+                </div>
+                ${t.finished ? '<div style="color:red; font-weight:bold;">C\'EST PRÊT !</div>' : ''}
+            </div>
+        `).join('');
+    }
+
+    // --- CORE ---
     function renderAll() {
         const cats = JSON.parse(localStorage.getItem('cats')) || DEFS;
         const favs = JSON.parse(localStorage.getItem('favs')) || [];
         
         document.getElementById('sel-filter').innerHTML = cats.map(c => `<option value="${c}" ${window.activeFilter === c ? 'selected' : ''}>${c}</option>`).join('');
         document.getElementById('f-cat').innerHTML = cats.filter(c => c !== 'Tout').map(c => `<option value="${c}">${c}</option>`).join('');
-        document.getElementById('manage-cats').innerHTML = "<h4>Vos catégories :</h4>" + cats.filter(c => c !== 'Tout').map(c => `<div class="cat-item"><span>${c}</span><button onclick="delCat('${c}')" style="color:red; background:none; border:none;">✕</button></div>`).join('');
+        document.getElementById('manage-cats').innerHTML = "<h4>Catégories :</h4>" + cats.filter(c => c !== 'Tout').map(c => `
+            <div style="display:flex; justify-content:space-between; padding:5px 0;">
+                <span>${c}</span><button onclick="delCat('${c}')" style="color:red; border:none; background:none;">✕</button>
+            </div>`).join('');
 
         const filtered = window.activeFilter === 'Tout' ? favs : favs.filter(f => f.cat === window.activeFilter);
         document.getElementById('list-favs').innerHTML = filtered.map(f => `
@@ -85,21 +150,6 @@
                 <strong>${f.name}</strong><br><span>${Math.floor(f.time/60)} min</span>
                 <div onclick="event.stopPropagation(); delFav(${f.id})" style="color:red; font-size:0.6rem; margin-top:5px;">Effacer</div>
             </div>`).join('');
-    }
-
-    function addCat() {
-        const val = document.getElementById('new-cat-name').value.trim();
-        if (!val) return;
-        let cats = JSON.parse(localStorage.getItem('cats')) || DEFS;
-        if (!cats.includes(val)) { cats.push(val); localStorage.setItem('cats', JSON.stringify(cats)); }
-        document.getElementById('new-cat-name').value = '';
-        renderAll();
-    }
-
-    function delCat(name) {
-        let cats = (JSON.parse(localStorage.getItem('cats')) || DEFS).filter(c => c !== name);
-        localStorage.setItem('cats', JSON.stringify(cats));
-        renderAll();
     }
 
     function saveFav() {
@@ -118,18 +168,20 @@
         renderAll();
     }
 
-    function startTimer(name, secs) {
-        window.timers.push({ id: Date.now(), name, rem: secs, end: false });
-        showTab('timers');
+    function addCat() {
+        const val = document.getElementById('new-cat-name').value.trim();
+        if (!val) return;
+        let cats = JSON.parse(localStorage.getItem('cats')) || DEFS;
+        if (!cats.includes(val)) { cats.push(val); localStorage.setItem('cats', JSON.stringify(cats)); }
+        document.getElementById('new-cat-name').value = '';
+        renderAll();
     }
 
-    setInterval(() => {
-        window.timers.forEach(t => { if (t.rem > 0) t.rem--; else if (!t.end) { t.end = true; alert("FIN : " + t.name); } });
-        const container = document.getElementById('list-timers');
-        if (window.timers.length > 0) {
-            container.innerHTML = window.timers.map(t => `<div class="card" style="${t.end?'border:2px solid red':''}"><b>${t.name}</b> : ${Math.floor(t.rem/60)}m ${(t.rem%60).toString().padStart(2,'0')}s<button onclick="window.timers = window.timers.filter(x=>x.id!==${t.id})" style="float:right;">X</button></div>`).join('');
-        }
-    }, 1000);
+    function delCat(name) {
+        let cats = (JSON.parse(localStorage.getItem('cats')) || DEFS).filter(c => c !== name);
+        localStorage.setItem('cats', JSON.stringify(cats));
+        renderAll();
+    }
 
     function showTab(id, btn) {
         document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
@@ -145,18 +197,13 @@
         a.download = 'sauvegarde.json'; a.click();
     }
 
-    // --- NOUVELLE FONCTION D'IMPORTATION ---
     function importFromText() {
-        const text = document.getElementById('import-text').value;
         try {
-            const d = JSON.parse(text);
+            const d = JSON.parse(document.getElementById('import-text').value);
             if (d.cats) localStorage.setItem('cats', JSON.stringify(d.cats));
             if (d.favs) localStorage.setItem('favs', JSON.stringify(d.favs));
-            alert("Importation réussie !");
             location.reload();
-        } catch(e) {
-            alert("Erreur : le texte collé n'est pas valide. Assurez-vous de bien copier l'intégralité du texte du fichier .json.");
-        }
+        } catch(e) { alert("Erreur format"); }
     }
 
     window.onload = renderAll;
